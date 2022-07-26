@@ -71,4 +71,4 @@ struct ContentView: View {
 
 ### Demo
 
-![](https://user-images.githubusercontent.com/1020361/180887217-21d7bb3e-f410-43f7-8541-23e3892012b7.mov | width=300)
+https://user-images.githubusercontent.com/1020361/180887217-21d7bb3e-f410-43f7-8541-23e3892012b7.mov
