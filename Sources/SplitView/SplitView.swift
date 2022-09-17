@@ -11,7 +11,7 @@ import SwiftUI
 /// A view containing a primary view and a secondary view layed-out vertically and separated by a draggable horizontally-oriented Splitter
 ///
 /// The primary view is above the secondary view.
-struct VSplitView<P: View, S: View>: View {
+public struct VSplitView<P: View, S: View>: View {
     private let zIndex: Double
     private let visibleThickness: CGFloat
     private let invisibleThickness: CGFloat
@@ -20,7 +20,7 @@ struct VSplitView<P: View, S: View>: View {
     private let primary: ()->P
     private let secondary: ()->S
     
-    var body: some View {
+    public var body: some View {
         SplitView(
             layout: .Vertical,
             zIndex: zIndex,
@@ -32,7 +32,7 @@ struct VSplitView<P: View, S: View>: View {
             secondary: secondary)
     }
     
-    init(
+    public init(
         zIndex: Double = 0,
         visibleThickness: CGFloat = 4,
         invisibleThickness: CGFloat = 30,
@@ -55,7 +55,7 @@ struct VSplitView<P: View, S: View>: View {
 /// A view containing a primary view and a secondary view layed-out horizontally and separated by a draggable vertically-oriented Splitter
 ///
 /// The primary view is to the left of the secondary view.
-struct HSplitView<P: View, S: View>: View {
+public struct HSplitView<P: View, S: View>: View {
     private let zIndex: Double
     private let visibleThickness: CGFloat
     private let invisibleThickness: CGFloat
@@ -64,7 +64,7 @@ struct HSplitView<P: View, S: View>: View {
     private let primary: ()->P
     private let secondary: ()->S
     
-    var body: some View {
+    public var body: some View {
         SplitView(
             layout: .Horizontal,
             zIndex: zIndex,
@@ -76,7 +76,7 @@ struct HSplitView<P: View, S: View>: View {
             secondary: secondary)
     }
     
-    init(
+    public init(
         zIndex: Double = 0,
         visibleThickness: CGFloat = 4,
         invisibleThickness: CGFloat = 30,
