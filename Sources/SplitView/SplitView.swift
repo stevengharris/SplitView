@@ -8,314 +8,135 @@
 
 import SwiftUI
 
-/// A view containing a primary view and a secondary view layed-out vertically and separated by a draggable horizontally-oriented Splitter
-///
-/// The primary view is above the secondary view.
-public struct VSplitView<P: View, S: View>: View {
-    private let zIndex: Double
+/// A View with a draggable `Splitter` between `primary` and `secondary`.
+/// Views are layed out either horizontally or vertically as defined by `layout`.
+public struct SplitView<P: View, S: View>: View {
+    private let layout: SplitLayout
     private let visibleThickness: CGFloat
     private let invisibleThickness: CGFloat
-    @Binding private var fraction: CGFloat
-    @Binding private var secondaryHidden: Bool
-    private let primary: ()->P
-    private let secondary: ()->S
-    
-    public var body: some View {
-        SplitView(
-            layout: .Vertical,
-            zIndex: zIndex,
-            visibleThickness: visibleThickness,
-            invisibleThickness: invisibleThickness,
-            fraction: $fraction,
-            secondaryHidden: $secondaryHidden,
-            primary: primary,
-            secondary: secondary)
-    }
-    
-    public init(
-        zIndex: Double = 0,
-        visibleThickness: CGFloat = 4,
-        invisibleThickness: CGFloat = 30,
-        fraction: Binding<CGFloat> = .constant(0.5),
-        secondaryHidden: Binding<Bool>? = nil,
-        @ViewBuilder primary: @escaping (()->P),
-        @ViewBuilder secondary: @escaping (()->S)) {
-        self.zIndex = zIndex
-        self.visibleThickness = visibleThickness
-        self.invisibleThickness = invisibleThickness
-        _fraction = fraction
-        _secondaryHidden = secondaryHidden ?? .constant(false)
-        self.primary = primary
-        self.secondary = secondary
-    }
-    
-}
-
-
-/// A view containing a primary view and a secondary view layed-out horizontally and separated by a draggable vertically-oriented Splitter
-///
-/// The primary view is to the left of the secondary view.
-public struct HSplitView<P: View, S: View>: View {
-    private let zIndex: Double
-    private let visibleThickness: CGFloat
-    private let invisibleThickness: CGFloat
-    @Binding private var fraction: CGFloat
-    @Binding private var secondaryHidden: Bool
-    private let primary: ()->P
-    private let secondary: ()->S
-    
-    public var body: some View {
-        SplitView(
-            layout: .Horizontal,
-            zIndex: zIndex,
-            visibleThickness: visibleThickness,
-            invisibleThickness: invisibleThickness,
-            fraction: $fraction,
-            secondaryHidden: $secondaryHidden,
-            primary: primary,
-            secondary: secondary)
-    }
-    
-    public init(
-        zIndex: Double = 0,
-        visibleThickness: CGFloat = 4,
-        invisibleThickness: CGFloat = 30,
-        fraction: Binding<CGFloat> = .constant(0.5),
-        secondaryHidden: Binding<Bool>? = nil,
-        @ViewBuilder primary: @escaping (()->P),
-        @ViewBuilder secondary: @escaping (()->S)) {
-        self.zIndex = zIndex
-        self.visibleThickness = visibleThickness
-        self.invisibleThickness = invisibleThickness
-        _fraction = fraction
-        _secondaryHidden = secondaryHidden ?? .constant(false)
-        self.primary = primary
-        self.secondary = secondary
-    }
-    
-}
-
-/// The SplitView that is instantiated publicly using either a VSplitView or HSplitView.
-///
-/// The zIndex is needed for SplitViews that contain SplitViews sometimes, because the overlap of the multiple
-/// Splitters with the primary/secondary of adjacent views prevents the drag gesture from being detected.
-/// For example, in the following example, the various zIndexes keep the major vertical splitter on top, while the
-/// horizontal splitter overlays the green-yellow, and the smaller vertical splitter is underneath it. The full
-/// "invisibleWidth" of the splitter is then responsive for all three, modulo the overlaps at the ends. For example:
-/// ```
-///     HSplitView(
-///         zIndex: 2,
-///         fraction: .constant(0.5),
-///         primary: { Color.red },
-///         secondary: {
-///             VSplitView(
-///                 zIndex: 1,
-///                 fraction: .constant(0.5),
-///                 primary: { Color.blue },
-///                 secondary: {
-///                     HSplitView(
-///                         zIndex: 0,
-///                         fraction: .constant(0.5),
-///                         primary: { Color.green },
-///                         secondary: { Color.yellow }
-///                     )
-///                 }
-///             )
-///         }
-///     )
-///```
-///The zIndex is not needed in simpler cases.
-fileprivate struct SplitView<P: View, S: View>: View {
-    private let layout: Layout
-    private let zIndex: Double
-    private let visibleThickness: CGFloat
-    private let invisibleThickness: CGFloat
-    @Binding private var initialFraction: CGFloat
-    @Binding private var secondaryHidden: Bool
+    /// Only affects the initial layout, but updated to `privateFraction` after dragging ends.
+    /// In this way, SplitView users can save the `SplitFraction` state to reflect slider position for restarts.
+    @ObservedObject private var fraction: SplitFraction
+    /// Use to hide/show `secondary` independent of dragging. When value is `false`, will restore to `privateFraction`.
+    @ObservedObject private var hide: SplitHide
+    /// The `primary` View, left when `layout==.Horizontal`, top when `layout==.Vertical`.
     private let primary: P
+    /// The `secondary` View, right when `layout==.Horizontal`, bottom when `layout==.Vertical`.
     private let secondary: S
+    /// The `Splitter` that sits between `primary` and `secondary`.
+    private let splitter: Splitter
+    /// Whether a `SplitFraction` was passed-in during `init`, to gate whether it is ever updated
+    private let hasInitialFraction: Bool
+    /// The key state that changes the split between `primary` and `secondary`
     @State private var privateFraction: CGFloat
-    @State private var overallSize: CGSize = .zero
-    @State private var primaryWidth: CGFloat?
-    @State private var primaryHeight: CGFloat?
     
-    let sizingQueue = DispatchQueue(label: "SizePreference", qos: .userInteractive)
-
-    var hDrag: some Gesture {
-        // As we drag the Splitter horizontally, adjust the primaryWidth and recalculate fraction
-        DragGesture()
-            .onChanged { gesture in
-                let x = min(max(gesture.location.x, 0), overallSize.width)
-                primaryWidth = x
-                privateFraction = x / overallSize.width
+    public var body: some View {
+        GeometryReader { geometry in
+            let size = geometry.size
+            let pLength = pLength(in: size)
+            let sLength = sLength(in: size)
+            let breadth = layout == .Horizontal ? size.height : size.width
+            let pWidth = max(0, layout == .Horizontal ? min(size.width - visibleThickness, pLength - visibleThickness / 2) : breadth)
+            let pHeight = max(0, layout == .Horizontal ? breadth : min(size.height - visibleThickness, pLength - visibleThickness / 2))
+            let sWidth = max(0, layout == .Horizontal ? sLength - visibleThickness / 2 : breadth)
+            let sHeight = max(0, layout == .Horizontal ? breadth : min(size.height - visibleThickness, sLength - visibleThickness / 2))
+            let secondaryOffset = layout == .Horizontal ? CGSize(width: pWidth + visibleThickness, height: 0) : CGSize(width: 0, height: pHeight + visibleThickness)
+            let splitPosition = layout == .Horizontal ? CGPoint(x: secondaryOffset.width - visibleThickness / 2, y: size.height / 2) : CGPoint(x: size.width / 2, y: secondaryOffset.height - visibleThickness / 2)
+            ZStack(alignment: .topLeading) {
+                primary
+                    .frame(width: pWidth, height: pHeight)
+                secondary
+                    .frame(width: sWidth, height: sHeight)
+                    .offset(secondaryOffset)
+                splitter
+                    .position(splitPosition)
+                    .gesture(drag(in: size))
             }
-            .onEnded { gesture in
-                primaryWidth = nil                  // So that secondaryHidden works after drag
-                initialFraction = privateFraction   // To hold in UserData
-            }
-    }
-    
-    var vDrag: some Gesture {
-        // As we drag the Splitter vertically, adjust the primaryHeight and recalculate fraction
-        DragGesture()
-            .onChanged { gesture in
-                let y = min(max(gesture.location.y, 0), overallSize.height)
-                primaryHeight = y
-                privateFraction = y / overallSize.height
-            }
-            .onEnded { gesture in
-                primaryHeight = nil                 // So that secondaryHidden works after drag
-                initialFraction = privateFraction   // To hold in UserData
-            }
-    }
-    
-    enum Layout: CaseIterable {
-        /// The orientation of the primary and seconday views (e.g., Vertical = VStack, Horizontal = HStack)
-        case Horizontal
-        case Vertical
-    }
-    
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            switch layout {
-            case .Horizontal:
-                // When we init the view, primaryWidth is nil, so we calculate it from the
-                // fraction that was passed-in. This lets us specify the location of the Splitter
-                // when we instantiate the SplitView.
-                Group {
-                    primary
-                        .frame(width: pWidth())
-                    secondary
-                        .frame(width: sWidth())
-                        .clipped() // Must be present before offset to prevent ListHeader above List from extending beyond VStack!
-                        .offset(x: offsetWidth(), y: 0)
-                    Splitter(orientation: .Vertical, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness)
-                        .frame(width: invisibleThickness, height: overallSize.height)
-                        .position(x: pWidth() + visibleThickness / 2, y: overallSize.height / 2)
-                        .zIndex(zIndex)
-                        .gesture(hDrag, including: .all)
-                }
-            case .Vertical:
-                // When we init the view, primaryHeight is nil, so we calculate it from the
-                // fraction that was passed-in. This lets us specify the location of the Splitter
-                // when we instantiate the SplitView.
-                Group {
-                    primary
-                        .frame(height: pHeight())
-                    secondary
-                        .frame(height: sHeight())
-                        .clipped() // Must be present before offset to prevent ListHeader above List from extending beyond VStack!
-                        .offset(x: 0, y: offsetHeight())
-                    Splitter(orientation: .Horizontal, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness)
-                        .frame(width: overallSize.width, height: invisibleThickness)
-                        .position(x: overallSize.width / 2, y: pHeight() + visibleThickness / 2)
-                        .zIndex(zIndex)
-                        .gesture(vDrag, including: .all)
-                }
-            }
+            .clipped()
         }
-        .background(GeometryReader { geometry in
-            // Track the overallSize using a GeometryReader on a clear background on the ZStack contains the
-            // primary, secondary, and splitter
-            Color.clear
-                .preference(key: SizePreferenceKey.self, value: geometry.size)
-                .onPreferenceChange(SizePreferenceKey.self) { newSize in
-                    // Run async to avoid "Bound preference SizePreferenceKey tried to update multiple times per frame"
-                    sizingQueue.async {
-                        overallSize = newSize
-                    }
-                }
-        })
-        .contentShape(Rectangle())
     }
     
-    init(layout: Layout, zIndex: Double, visibleThickness: CGFloat, invisibleThickness: CGFloat, fraction: Binding<CGFloat>, secondaryHidden: Binding<Bool>, @ViewBuilder primary: (()->P), @ViewBuilder secondary: (()->S)) {
-        self.layout = layout
-        self.zIndex = zIndex
-        self.visibleThickness = visibleThickness
-        self.invisibleThickness = invisibleThickness
-        _initialFraction = fraction                                     // Binding, update when drag ends
-        _privateFraction = State(initialValue: fraction.wrappedValue)   // Local fraction updated during drag
-        _primaryWidth = State(initialValue: nil)
-        _primaryHeight = State(initialValue: nil)
-        _secondaryHidden = secondaryHidden
+    public init(layout: SplitLayout? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil, fraction: SplitFraction? = nil, hide: SplitHide? = nil, @ViewBuilder primary: (()->P), @ViewBuilder secondary: (()->S)) {
+        self.layout = layout ?? .Horizontal
+        self.visibleThickness = visibleThickness ?? 4
+        self.invisibleThickness = invisibleThickness ?? 30
+        hasInitialFraction = fraction != nil
+        self.fraction = fraction ?? SplitFraction()
+        self.hide = hide ?? SplitHide()
+        _privateFraction = State(initialValue: fraction?.value ?? 0.5)   // Local fraction updated during drag
         self.primary = primary()
         self.secondary = secondary()
+        splitter = Splitter(layout: self.layout, visibleThickness: self.visibleThickness, invisibleThickness: self.invisibleThickness)
     }
     
-    private func pWidth() -> CGFloat {
-        // Return the width of the primary view when .Horizontal or primaryWidth if not nil
-        guard primaryWidth == nil else { return primaryWidth! }
-        var pWidth: CGFloat
-        if secondaryHidden {
-            pWidth = overallSize.width - visibleThickness / 2
+    /// The Gesture recognized by the `Splitter`
+    ///
+    /// The main function of dragging is to modify the `privateFraction`, which is always between 0 and 1.
+    /// Whenever we drag, we also set `hide.value` to nil. This is because the pLength and
+    /// other dimensions key off of `hide` to return the full width/height when its value is non-nil
+    /// When we are done dragging, we `updateSplitFraction`, which does nothing unless there was
+    /// a `SplitFraction` passed-in at `init` time.
+    private func drag(in size: CGSize) -> some Gesture {
+        if layout == .Horizontal {
+            return DragGesture()
+                .onChanged { gesture in
+                    hide.value = nil
+                    privateFraction = min(1, max(0, gesture.location.x / size.width))
+                }
+                .onEnded { gesture in
+                    updateSplitFraction(to: privateFraction)
+                }
         } else {
-            pWidth = (overallSize.width * privateFraction) - (visibleThickness / 2)
-        }
-        return min(max(0, pWidth), overallSize.width)
-    }
-    
-    private func sWidth() -> CGFloat {
-        return max(0, overallSize.width - pWidth() - visibleThickness)
-    }
-    
-    private func offsetWidth() -> CGFloat {
-        // Return the offset to the secondary view when .Horizontal
-        if secondaryHidden {
-            return overallSize.width
-        } else {
-            return (overallSize.width * privateFraction) + visibleThickness / 2
-        }
-    }
-    
-    private func pHeight() -> CGFloat {
-        // Return the height of the primary view when .Vertical or primaryHeight if not nil
-        guard primaryHeight == nil else { return primaryHeight! }
-        var pHeight: CGFloat
-        if secondaryHidden {
-            pHeight = overallSize.height - visibleThickness / 2
-        } else {
-            pHeight = (overallSize.height * privateFraction) - (visibleThickness / 2)
-        }
-        return min(max(0, pHeight), overallSize.height)
-    }
-    
-    private func sHeight() -> CGFloat {
-        return max(0, overallSize.height - pHeight() - visibleThickness)
-    }
-    
-    private func offsetHeight() -> CGFloat {
-        // Return the offset to the secondary view when .Vertical
-        if secondaryHidden {
-            return overallSize.height
-        } else {
-            return (overallSize.height * privateFraction) + visibleThickness / 2
+            return DragGesture()
+                .onChanged { gesture in
+                    hide.value = nil
+                    privateFraction = min(1, max(0, gesture.location.y / size.height))
+                }
+                .onEnded { gesture in
+                    updateSplitFraction(to: privateFraction)
+                }
         }
     }
     
-}
-
-fileprivate struct SizePreferenceKey: PreferenceKey {
-    static var defaultValue: CGSize = .zero
-
-    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
-        value = nextValue()
+    /// Set the SplitFraction.value only if it was passed-in at initialization time
+    private func updateSplitFraction(to newFraction: CGFloat) {
+        guard hasInitialFraction else { return }
+        fraction.value = newFraction
     }
+    
+    /// The length of primary in the layout direction, without regard to any inset for the Splitter
+    private func pLength(in size: CGSize) -> CGFloat {
+        let length = layout == .Horizontal ? size.width : size.height
+        guard let side = hide.value else {
+            return length * privateFraction
+        }
+        return side == .Secondary ? length : 0
+    }
+    
+    /// The length of secondary in the layout direction, without regard to any inset for the Splitter
+    private func sLength(in size: CGSize) -> CGFloat {
+        let length = layout == .Horizontal ? size.width : size.height
+        guard let side = hide.value else {
+            return length - pLength(in: size)
+        }
+        return side == .Primary ? length : 0
+    }
+    
 }
 
 struct SplitView_Previews: PreviewProvider {
     static var previews: some View {
-        HSplitView(
-            zIndex: 2,
-            fraction: .constant(0.75),
+        SplitView(
+            layout: .Horizontal,
+            fraction: SplitFraction(0.75),
             primary: { Color.red },
             secondary: {
-                VSplitView(
-                    zIndex: 1,
+                SplitView(
+                    layout: .Vertical,
                     primary: { Color.blue },
                     secondary: {
-                        VSplitView(
-                            zIndex: 0,
+                        SplitView(
+                            layout: .Vertical,
                             primary: { Color.green },
                             secondary: { Color.yellow }
                         )
@@ -324,9 +145,10 @@ struct SplitView_Previews: PreviewProvider {
             }
         )
         .frame(width: 400, height: 400)
-        HSplitView(
-            primary: { VSplitView( primary: { Color.red }, secondary: { Color.green }) },
-            secondary: { HSplitView( primary: { Color.blue }, secondary: { Color.yellow }) }
+        SplitView(
+            layout: .Horizontal,
+            primary: { SplitView(layout: .Vertical, primary: { Color.red }, secondary: { Color.green }) },
+            secondary: { SplitView(layout: .Horizontal, primary: { Color.blue }, secondary: { Color.yellow }) }
         )
         .frame(width: 400, height: 400)
     }

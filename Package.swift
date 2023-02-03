@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "SplitView",
-    platforms: [.macOS(.v12), .iOS(.v13), .macCatalyst(.v13)],
+    platforms: [.macOS(.v12), .iOS(.v15), .macCatalyst(.v15)],
     products: [
         .library(
             name: "SplitView",
