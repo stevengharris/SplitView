@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "splitview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stevengharris/SplitView.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d7b694c1f63ce1c345db866119fd382d875a1d0a"
+      }
+    }
+  ],
+  "version" : 2
+}
