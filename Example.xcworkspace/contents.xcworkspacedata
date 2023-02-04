@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:TestSplitView/TestSplitView.xcodeproj">
+      location = "group:../TestSplitView/Example/Example.xcodeproj">
    </FileRef>
 </Workspace>
