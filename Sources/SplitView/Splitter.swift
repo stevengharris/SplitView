@@ -9,7 +9,7 @@
 import SwiftUI
 
 /// The Splitter that separates the `primary` from `secondary` views in a `SplitView`.
-struct Splitter: View {
+public struct Splitter: View {
     
     private let layout: SplitLayout
     private let color: Color
@@ -17,7 +17,15 @@ struct Splitter: View {
     private let visibleThickness: CGFloat
     private var invisibleThickness: CGFloat
     
-    var body: some View {
+    public static var horizontal: Splitter {
+        Splitter(layout: .Horizontal, visibleThickness: 4, invisibleThickness: 30)
+    }
+    
+    public static var vertical: Splitter {
+        Splitter(layout: .Vertical, visibleThickness: 4, invisibleThickness: 30)
+    }
+    
+    public var body: some View {
         ZStack(alignment: .center) {
             switch layout {
             case .Horizontal:
@@ -55,7 +63,7 @@ struct Splitter: View {
         */
     }
     
-    init(layout: SplitLayout, color: Color = Color.gray, inset: CGFloat = 8, visibleThickness: CGFloat, invisibleThickness: CGFloat) {
+    public init(layout: SplitLayout, color: Color = Color.gray, inset: CGFloat = 8, visibleThickness: CGFloat, invisibleThickness: CGFloat) {
         self.layout = layout
         self.color = color
         self.inset = inset

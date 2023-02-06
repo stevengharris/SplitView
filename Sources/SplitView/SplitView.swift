@@ -8,9 +8,9 @@
 
 import SwiftUI
 
-/// A View with a draggable `Splitter` between `primary` and `secondary`.
+/// A View with a draggable `splitter` between `primary` and `secondary`.
 /// Views are layed out either horizontally or vertically as defined by `layout`.
-public struct SplitView<P: View, S: View>: View {
+public struct SplitView<P: View, S: View, D: View>: View {
     private let layout: SplitLayout
     private let visibleThickness: CGFloat
     private let invisibleThickness: CGFloat
@@ -23,8 +23,9 @@ public struct SplitView<P: View, S: View>: View {
     private let primary: P
     /// The `secondary` View, right when `layout==.Horizontal`, bottom when `layout==.Vertical`.
     private let secondary: S
-    /// The `Splitter` that sits between `primary` and `secondary`.
-    private let splitter: Splitter
+    /// The `splitter` View that sits between `primary` and `secondary`.
+    /// When set up using ViewModifiers, by default either `Splitter.horizontal` or `Splitter.vertical`.
+    private let splitter: D
     /// Whether a `SplitFraction` was passed-in during `init`, to gate whether it is ever updated
     private let hasInitialFraction: Bool
     /// The key state that changes the split between `primary` and `secondary`
@@ -56,7 +57,7 @@ public struct SplitView<P: View, S: View>: View {
         }
     }
     
-    public init(layout: SplitLayout? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil, fraction: SplitFraction? = nil, hide: SplitHide? = nil, @ViewBuilder primary: (()->P), @ViewBuilder secondary: (()->S)) {
+    public init(layout: SplitLayout? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil, fraction: SplitFraction? = nil, hide: SplitHide? = nil, @ViewBuilder primary: (()->P), @ViewBuilder secondary: (()->S), @ViewBuilder splitter: (()->D)) {
         self.layout = layout ?? .Horizontal
         self.visibleThickness = visibleThickness ?? 4
         self.invisibleThickness = invisibleThickness ?? 30
@@ -66,7 +67,7 @@ public struct SplitView<P: View, S: View>: View {
         _privateFraction = State(initialValue: fraction?.value ?? 0.5)   // Local fraction updated during drag
         self.primary = primary()
         self.secondary = secondary()
-        splitter = Splitter(layout: self.layout, visibleThickness: self.visibleThickness, invisibleThickness: self.invisibleThickness)
+        self.splitter = splitter()
     }
     
     /// The Gesture recognized by the `Splitter`
@@ -138,17 +139,21 @@ struct SplitView_Previews: PreviewProvider {
                         SplitView(
                             layout: .Vertical,
                             primary: { Color.green },
-                            secondary: { Color.yellow }
+                            secondary: { Color.yellow },
+                            splitter: { Splitter.vertical }
                         )
-                    }
+                    },
+                    splitter: { Splitter.vertical }
                 )
-            }
+            },
+            splitter: { Splitter.horizontal }
         )
         .frame(width: 400, height: 400)
         SplitView(
             layout: .Horizontal,
-            primary: { SplitView(layout: .Vertical, primary: { Color.red }, secondary: { Color.green }) },
-            secondary: { SplitView(layout: .Horizontal, primary: { Color.blue }, secondary: { Color.yellow }) }
+            primary: { SplitView(layout: .Vertical, primary: { Color.red }, secondary: { Color.green }, splitter: { Splitter.vertical }) },
+            secondary: { SplitView(layout: .Horizontal, primary: { Color.blue }, secondary: { Color.yellow }, splitter: { Splitter.horizontal }) },
+            splitter: { Splitter.horizontal }
         )
         .frame(width: 400, height: 400)
     }
