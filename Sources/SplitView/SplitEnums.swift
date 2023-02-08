@@ -8,7 +8,7 @@
 import Foundation
 
 /// The orientation of the `primary` and `secondary` views (e.g., Vertical = VStack, Horizontal = HStack)
-public enum SplitLayout: CaseIterable {
+public enum SplitLayout: String, CaseIterable {
     case Horizontal
     case Vertical
 }

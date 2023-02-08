@@ -17,13 +17,12 @@ public struct Splitter: View {
     private let visibleThickness: CGFloat
     private var invisibleThickness: CGFloat
     
-    public static var horizontal: Splitter {
-        Splitter(layout: .Horizontal, visibleThickness: 4, invisibleThickness: 30)
-    }
-    
-    public static var vertical: Splitter {
-        Splitter(layout: .Vertical, visibleThickness: 4, invisibleThickness: 30)
-    }
+    public static var defaultColor: Color = Color.gray
+    public static var defaultInset: CGFloat = 8
+    public static var defaultVisibleThickness: CGFloat = 4
+    public static var defaultInvisibleThickness: CGFloat = 30
+    public static var horizontal: Splitter { Splitter(.Horizontal) }
+    public static var vertical: Splitter { Splitter(.Vertical) }
     
     public var body: some View {
         ZStack(alignment: .center) {
@@ -63,12 +62,12 @@ public struct Splitter: View {
         */
     }
     
-    public init(layout: SplitLayout, color: Color = Color.gray, inset: CGFloat = 8, visibleThickness: CGFloat, invisibleThickness: CGFloat) {
+    public init(_ layout: SplitLayout, color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
         self.layout = layout
-        self.color = color
-        self.inset = inset
-        self.visibleThickness = visibleThickness
-        self.invisibleThickness = invisibleThickness
+        self.color = color ?? Self.defaultColor
+        self.inset = inset ?? Self.defaultInset
+        self.visibleThickness = visibleThickness ?? Self.defaultVisibleThickness
+        self.invisibleThickness = invisibleThickness ?? Self.defaultInvisibleThickness
     }
     
 }
@@ -76,7 +75,7 @@ public struct Splitter: View {
 
 struct Splitter_Previews: PreviewProvider {
     static var previews: some View {
-        Splitter(layout: .Horizontal, visibleThickness: 4, invisibleThickness: 30)
-        Splitter(layout: .Vertical, visibleThickness: 4, invisibleThickness: 30)
+        Splitter.horizontal
+        Splitter.vertical
     }
 }
