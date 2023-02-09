@@ -19,6 +19,8 @@ public class LayoutHolder: ObservableObject {
     public var getter: (()->SplitLayout)?
     public var setter: ((SplitLayout)->Void)?
     
+    public var isHorizontal: Bool { value == .Horizontal }
+    
     public init(_ layout: SplitLayout? = nil, getter: (()->SplitLayout)? = nil, setter: ((SplitLayout)->Void)? = nil) {
         value = getter?() ?? layout ?? .Horizontal
         self.getter = getter
@@ -42,6 +44,11 @@ public class LayoutHolder: ObservableObject {
             }
         )
     }
+    
+    public func toggle() {
+        value = value == .Horizontal ? .Vertical : .Horizontal
+    }
+
 }
 
 /// An ObservableObject that `SplitView` observes to change what fraction of the width/height the `splitter`

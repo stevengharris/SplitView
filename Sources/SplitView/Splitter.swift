@@ -11,7 +11,7 @@ import SwiftUI
 /// The Splitter that separates the `primary` from `secondary` views in a `SplitView`.
 public struct Splitter: View {
     
-    private let layout: SplitLayout
+    private let layout: LayoutHolder
     private let color: Color
     private let inset: CGFloat
     private let visibleThickness: CGFloat
@@ -21,12 +21,12 @@ public struct Splitter: View {
     public static var defaultInset: CGFloat = 8
     public static var defaultVisibleThickness: CGFloat = 4
     public static var defaultInvisibleThickness: CGFloat = 30
-    public static var horizontal: Splitter { Splitter(.Horizontal) }
-    public static var vertical: Splitter { Splitter(.Vertical) }
+    public static var horizontal: Splitter = Splitter(.Horizontal)
+    public static var vertical: Splitter = Splitter(.Vertical)
     
     public var body: some View {
         ZStack(alignment: .center) {
-            switch layout {
+            switch layout.value {
             case .Horizontal:
                 Color.clear
                     .frame(width: invisibleThickness)
@@ -53,7 +53,7 @@ public struct Splitter: View {
             // doesn't work on iOS
             #if targetEnvironment(macCatalyst)
             if inside {
-                layout == .Horizontal ? NSCursor.resizeLeftRight.push() : NSCursor.resizeUpDown.push()
+                layout.isHorizontal ? NSCursor.resizeLeftRight.push() : NSCursor.resizeUpDown.push()
             } else {
                 NSCursor.pop()
             }
@@ -62,12 +62,16 @@ public struct Splitter: View {
         */
     }
     
-    public init(_ layout: SplitLayout, color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
+    public init(_ layout: LayoutHolder, color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
         self.layout = layout
         self.color = color ?? Self.defaultColor
         self.inset = inset ?? Self.defaultInset
         self.visibleThickness = visibleThickness ?? Self.defaultVisibleThickness
         self.invisibleThickness = invisibleThickness ?? Self.defaultInvisibleThickness
+    }
+    
+    public init(_ layout: SplitLayout, color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
+        self.init(LayoutHolder(layout), color: color, inset: inset, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness)
     }
     
 }

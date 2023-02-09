@@ -18,8 +18,9 @@ import SwiftUI
 ///
 /// Why D for the generic `splitter`? S was used for `secondary`, and D makes sense as "Divider".
 public struct SplitView<P: View, D: View, S: View>: View {
-    private let layout: SplitLayout
     private let spacing: CGFloat
+    /// Used to change the SplitLayout of a SplitView
+    @ObservedObject private var layout: LayoutHolder
     /// Only affects the initial layout, but updated to `privateFraction` after dragging ends.
     /// In this way, SplitView users can save the `FractionHolder` state to reflect slider position for restarts.
     @ObservedObject private var fraction: FractionHolder
@@ -39,18 +40,19 @@ public struct SplitView<P: View, D: View, S: View>: View {
     
     public var body: some View {
         GeometryReader { geometry in
+            let horizontal = layout.isHorizontal
             let size = geometry.size
             let width = size.width
             let height = size.height
             let pLength = pLength(in: size)
             let sLength = sLength(in: size)
-            let breadth = layout == .Horizontal ? size.height : width
-            let pWidth = max(0, layout == .Horizontal ? min(width - spacing, pLength - spacing / 2) : breadth)
-            let pHeight = max(0, layout == .Horizontal ? breadth : min(height - spacing, pLength - spacing / 2))
-            let sWidth = max(0, layout == .Horizontal ? sLength - spacing / 2 : breadth)
-            let sHeight = max(0, layout == .Horizontal ? breadth : min(height - spacing, sLength - spacing / 2))
-            let sOffset = layout == .Horizontal ? CGSize(width: pWidth + spacing, height: 0) : CGSize(width: 0, height: pHeight + spacing)
-            let center = layout == .Horizontal ? CGPoint(x: sOffset.width - spacing / 2, y: height / 2) : CGPoint(x: width / 2, y: sOffset.height - spacing / 2)
+            let breadth = horizontal ? size.height : width
+            let pWidth = max(0, horizontal ? min(width - spacing, pLength - spacing / 2) : breadth)
+            let pHeight = max(0, horizontal ? breadth : min(height - spacing, pLength - spacing / 2))
+            let sWidth = max(0, horizontal ? sLength - spacing / 2 : breadth)
+            let sHeight = max(0, horizontal ? breadth : min(height - spacing, sLength - spacing / 2))
+            let sOffset = horizontal ? CGSize(width: pWidth + spacing, height: 0) : CGSize(width: 0, height: pHeight + spacing)
+            let center = horizontal ? CGPoint(x: sOffset.width - spacing / 2, y: height / 2) : CGPoint(x: width / 2, y: sOffset.height - spacing / 2)
             ZStack(alignment: .topLeading) {
                 primary
                     .frame(width: pWidth, height: pHeight)
@@ -62,10 +64,11 @@ public struct SplitView<P: View, D: View, S: View>: View {
                     .gesture(drag(in: size))
             }
             .clipped()  // Can cause problems in some List styles if not clipped
+            .environmentObject(layout)
         }
     }
     
-    public init(_ layout: SplitLayout, spacing: CGFloat? = nil, fraction: FractionHolder? = nil, hide: SideHolder? = nil, @ViewBuilder primary: (()->P), @ViewBuilder splitter: (()->D), @ViewBuilder secondary: (()->S)) {
+    public init(_ layout: LayoutHolder, spacing: CGFloat? = nil, fraction: FractionHolder? = nil, hide: SideHolder? = nil, @ViewBuilder primary: (()->P), @ViewBuilder splitter: (()->D), @ViewBuilder secondary: (()->S)) {
         self.layout = layout
         self.spacing = spacing ?? Splitter.defaultVisibleThickness
         hasInitialFraction = fraction != nil                            // True updates fraction's value after drag
@@ -75,6 +78,10 @@ public struct SplitView<P: View, D: View, S: View>: View {
         self.primary = primary()
         self.splitter = splitter()
         self.secondary = secondary()
+    }
+    
+    public init(_ layout: SplitLayout, spacing: CGFloat? = nil, fraction: FractionHolder? = nil, hide: SideHolder? = nil, @ViewBuilder primary: (()->P), @ViewBuilder splitter: (()->D), @ViewBuilder secondary: (()->S)) {
+        self.init(LayoutHolder(layout), spacing: spacing, fraction: fraction, hide: hide, primary: primary, splitter: splitter, secondary: secondary)
     }
     
     /// The Gesture recognized by the `splitter`
@@ -87,7 +94,7 @@ public struct SplitView<P: View, D: View, S: View>: View {
     /// When we are done dragging, we `updateFraction`, which does nothing unless there was
     /// a `FractionHolder` passed-in at `init` time as held in `hasInitialFraction`.
     private func drag(in size: CGSize) -> some Gesture {
-        switch layout {
+        switch layout.value {
         case .Horizontal:
             return DragGesture()
                 .onChanged { gesture in
@@ -117,7 +124,7 @@ public struct SplitView<P: View, D: View, S: View>: View {
     
     /// The length of primary in the layout direction, without regard to any inset for the Splitter
     private func pLength(in size: CGSize) -> CGFloat {
-        let length = layout == .Horizontal ? size.width : size.height
+        let length = layout.isHorizontal ? size.width : size.height
         guard let side = hide.value else {
             return length * privateFraction
         }
@@ -126,7 +133,7 @@ public struct SplitView<P: View, D: View, S: View>: View {
     
     /// The length of secondary in the layout direction, without regard to any inset for the Splitter
     private func sLength(in size: CGSize) -> CGFloat {
-        let length = layout == .Horizontal ? size.width : size.height
+        let length = layout.isHorizontal ? size.width : size.height
         guard let side = hide.value else {
             return length - pLength(in: size)
         }
