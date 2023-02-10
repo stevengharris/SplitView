@@ -8,20 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		AAD5CF7329956D1C00F94B1D /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD5CF7229956D1C00F94B1D /* ExampleApp.swift */; };
-		AAD5CF7529956D1C00F94B1D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD5CF7429956D1C00F94B1D /* ContentView.swift */; };
+		AAD5CF7529956D1C00F94B1D /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD5CF7429956D1C00F94B1D /* DemoApp.swift */; };
 		AAD5CF7729956D1D00F94B1D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AAD5CF7629956D1D00F94B1D /* Assets.xcassets */; };
 		AAD5CF7A29956D1D00F94B1D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AAD5CF7929956D1D00F94B1D /* Preview Assets.xcassets */; };
 		AAD5CF8229956D8500F94B1D /* SplitView in Frameworks */ = {isa = PBXBuildFile; productRef = AAD5CF8129956D8500F94B1D /* SplitView */; };
+		AAF9E0C62996F5CE00EDD306 /* DemoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF9E0C52996F5CE00EDD306 /* DemoModel.swift */; };
+		AAF9E0C82996F80900EDD306 /* DemoToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF9E0C72996F80900EDD306 /* DemoToolbar.swift */; };
+		AAF9E0CA2996F85A00EDD306 /* DemoSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF9E0C92996F85A00EDD306 /* DemoSplitter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AAC4D89C29956F14005FDD5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AAD5CF6F29956D1C00F94B1D /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAD5CF7229956D1C00F94B1D /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
-		AAD5CF7429956D1C00F94B1D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AAD5CF7429956D1C00F94B1D /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
 		AAD5CF7629956D1D00F94B1D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AAD5CF7929956D1D00F94B1D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AAD5CF8329956E3300F94B1D /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
+		AAF9E0C52996F5CE00EDD306 /* DemoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoModel.swift; sourceTree = "<group>"; };
+		AAF9E0C72996F80900EDD306 /* DemoToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoToolbar.swift; sourceTree = "<group>"; };
+		AAF9E0C92996F85A00EDD306 /* DemoSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoSplitter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +64,10 @@
 				AAC4D89C29956F14005FDD5C /* Info.plist */,
 				AAD5CF8329956E3300F94B1D /* Example.entitlements */,
 				AAD5CF7229956D1C00F94B1D /* ExampleApp.swift */,
-				AAD5CF7429956D1C00F94B1D /* ContentView.swift */,
+				AAD5CF7429956D1C00F94B1D /* DemoApp.swift */,
+				AAF9E0C52996F5CE00EDD306 /* DemoModel.swift */,
+				AAF9E0C92996F85A00EDD306 /* DemoSplitter.swift */,
+				AAF9E0C72996F80900EDD306 /* DemoToolbar.swift */,
 				AAD5CF7629956D1D00F94B1D /* Assets.xcassets */,
 				AAD5CF7829956D1D00F94B1D /* Preview Content */,
 			);
@@ -149,7 +158,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AAD5CF7529956D1C00F94B1D /* ContentView.swift in Sources */,
+				AAF9E0CA2996F85A00EDD306 /* DemoSplitter.swift in Sources */,
+				AAF9E0C82996F80900EDD306 /* DemoToolbar.swift in Sources */,
+				AAD5CF7529956D1C00F94B1D /* DemoApp.swift in Sources */,
+				AAF9E0C62996F5CE00EDD306 /* DemoModel.swift in Sources */,
 				AAD5CF7329956D1C00F94B1D /* ExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -207,7 +219,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -261,7 +274,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -284,6 +298,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Example/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "SplitView Demo";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -319,6 +334,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Example/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "SplitView Demo";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
