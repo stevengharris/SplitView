@@ -11,7 +11,7 @@ import Foundation
 ///
 /// Use the static `usingUserDefaults` method to save state automatically in `UserDefaults.standard`.
 public class LayoutHolder: ObservableObject {
-    public var value: SplitLayout {
+    @Published public var value: SplitLayout {
         didSet {
             setter?(value)
         }

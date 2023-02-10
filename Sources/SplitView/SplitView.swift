@@ -17,7 +17,7 @@ import SwiftUI
 /// a visible thickness different than `Splitter.defaultVisibleThickness`.
 ///
 /// Why D for the generic `splitter`? S was used for `secondary`, and D makes sense as "Divider".
-public struct SplitView<P: View, D: View, S: View>: View {
+public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     private let spacing: CGFloat
     /// Used to change the SplitLayout of a SplitView
     @ObservedObject private var layout: LayoutHolder
@@ -70,7 +70,6 @@ public struct SplitView<P: View, D: View, S: View>: View {
     
     public init(_ layout: LayoutHolder, spacing: CGFloat? = nil, fraction: FractionHolder? = nil, hide: SideHolder? = nil, @ViewBuilder primary: (()->P), @ViewBuilder splitter: (()->D), @ViewBuilder secondary: (()->S)) {
         self.layout = layout
-        self.spacing = spacing ?? Splitter.defaultVisibleThickness
         hasInitialFraction = fraction != nil                            // True updates fraction's value after drag
         self.fraction = fraction ?? FractionHolder()
         self.hide = hide ?? SideHolder()
@@ -78,6 +77,7 @@ public struct SplitView<P: View, D: View, S: View>: View {
         self.primary = primary()
         self.splitter = splitter()
         self.secondary = secondary()
+        self.spacing = spacing ?? self.splitter.visibleThickness
     }
     
     public init(_ layout: SplitLayout, spacing: CGFloat? = nil, fraction: FractionHolder? = nil, hide: SideHolder? = nil, @ViewBuilder primary: (()->P), @ViewBuilder splitter: (()->D), @ViewBuilder secondary: (()->S)) {

@@ -10,7 +10,7 @@ import SwiftUI
 /// A ViewModifier to split Content in `layout` direction with `secondary` at `fraction` and both views showing by default.
 ///
 /// The views are separated by `spacing`, with `splitter` sitting in the space.
-public struct Split<S: View, D: View>: ViewModifier {
+public struct Split<S: View, D: SplitDivider>: ViewModifier {
     let layout: LayoutHolder
     let spacing: CGFloat?
     let fraction: FractionHolder
@@ -56,7 +56,7 @@ extension View {
     /// Neither `fraction` nor `hide` specified, custom `splitter`.
     ///
     /// Views will be split in middle with both views showing.
-    public func split(_ layout: SplitLayout, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: SplitLayout, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(LayoutHolder(layout), fraction: FractionHolder(), hide: SideHolder(), splitter: splitter, secondary: secondary))
     }
     
@@ -70,7 +70,7 @@ extension View {
     }
     
     /// Both `fraction` and `hide` specified, custom `splitter`.
-    public func split(_ layout: SplitLayout, fraction: FractionHolder, hide: SideHolder, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: SplitLayout, fraction: FractionHolder, hide: SideHolder, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(LayoutHolder(layout), fraction: fraction, hide: hide, splitter: splitter, secondary: secondary))
     }
     
@@ -84,7 +84,7 @@ extension View {
     /// Only `hide` specified, custom `splitter`.
     ///
     /// Views will be split in the middle, with the `hide`side hidden.
-    public func split(_ layout: SplitLayout, hide: SideHolder, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: SplitLayout, hide: SideHolder, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(LayoutHolder(layout), fraction: FractionHolder(), hide: hide, splitter: splitter, secondary: secondary))
     }
 
@@ -98,7 +98,7 @@ extension View {
     /// Only `fraction` specific, custom `splitter`.
     ///
     /// Both views will be showing, split at `fraction` of the width/height.
-    public func split(_ layout: SplitLayout, fraction: FractionHolder, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: SplitLayout, fraction: FractionHolder, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(LayoutHolder(layout), fraction: fraction, hide: SideHolder(), splitter: splitter, secondary: secondary))
     }
     
@@ -112,7 +112,7 @@ extension View {
     }
     
     /// Both `fraction` and `hide` specified, custom `splitter`.
-    public func split(_ layout: SplitLayout, fraction: CGFloat, hide: SplitSide, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: SplitLayout, fraction: CGFloat, hide: SplitSide, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(LayoutHolder(layout), fraction: FractionHolder(fraction), hide: SideHolder(hide), splitter: splitter, secondary: secondary))
     }
     
@@ -126,7 +126,7 @@ extension View {
     /// Only `hide` specified, custom `splitter`.
     ///
     /// Views will be split in the middle, with the `hide`side hidden.
-    public func split(_ layout: SplitLayout, hide: SplitSide, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: SplitLayout, hide: SplitSide, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(LayoutHolder(layout), fraction: FractionHolder(), hide: SideHolder(hide), splitter: splitter, secondary: secondary))
     }
     
@@ -140,7 +140,7 @@ extension View {
     /// Only `fraction` specific, custom `splitter`.
     ///
     /// Both views will be showing, split at `fraction` of the width/height.
-    public func split(_ layout: SplitLayout, fraction: CGFloat, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: SplitLayout, fraction: CGFloat, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(LayoutHolder(layout), fraction: FractionHolder(fraction), hide: SideHolder(), splitter: splitter, secondary: secondary))
     }
 
@@ -164,7 +164,7 @@ extension View {
     /// Neither `fraction` nor `hide` specified, custom `splitter`.
     ///
     /// Views will be split in middle with both views showing.
-    public func split(_ layout: LayoutHolder, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: LayoutHolder, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(layout, fraction: FractionHolder(), hide: SideHolder(), splitter: splitter, secondary: secondary))
     }
     
@@ -178,7 +178,7 @@ extension View {
     }
     
     /// Both `fraction` and `hide` specified, custom `splitter`.
-    public func split(_ layout: LayoutHolder, fraction: FractionHolder, hide: SideHolder, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: LayoutHolder, fraction: FractionHolder, hide: SideHolder, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(layout, fraction: fraction, hide: hide, splitter: splitter, secondary: secondary))
     }
     
@@ -192,7 +192,7 @@ extension View {
     /// Only `hide` specified, custom `splitter`.
     ///
     /// Views will be split in the middle, with the `hide`side hidden.
-    public func split(_ layout: LayoutHolder, hide: SideHolder, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: LayoutHolder, hide: SideHolder, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(layout, fraction: FractionHolder(), hide: hide, splitter: splitter, secondary: secondary))
     }
 
@@ -206,7 +206,7 @@ extension View {
     /// Only `fraction` specific, custom `splitter`.
     ///
     /// Both views will be showing, split at `fraction` of the width/height.
-    public func split(_ layout: LayoutHolder, fraction: FractionHolder, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: LayoutHolder, fraction: FractionHolder, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(layout, fraction: fraction, hide: SideHolder(), splitter: splitter, secondary: secondary))
     }
     
@@ -220,7 +220,7 @@ extension View {
     }
     
     /// Both `fraction` and `hide` specified, custom `splitter`.
-    public func split(_ layout: LayoutHolder, fraction: CGFloat, hide: SplitSide, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: LayoutHolder, fraction: CGFloat, hide: SplitSide, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(layout, fraction: FractionHolder(fraction), hide: SideHolder(hide), splitter: splitter, secondary: secondary))
     }
     
@@ -234,7 +234,7 @@ extension View {
     /// Only `hide` specified, custom `splitter`.
     ///
     /// Views will be split in the middle, with the `hide`side hidden.
-    public func split(_ layout: LayoutHolder, hide: SplitSide, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: LayoutHolder, hide: SplitSide, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(layout, fraction: FractionHolder(), hide: SideHolder(hide), splitter: splitter, secondary: secondary))
     }
     
@@ -248,7 +248,7 @@ extension View {
     /// Only `fraction` specific, custom `splitter`.
     ///
     /// Both views will be showing, split at `fraction` of the width/height.
-    public func split(_ layout: LayoutHolder, fraction: CGFloat, @ViewBuilder splitter: @escaping (()->some View), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+    public func split(_ layout: LayoutHolder, fraction: CGFloat, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(layout, fraction: FractionHolder(fraction), hide: SideHolder(), splitter: splitter, secondary: secondary))
     }
 

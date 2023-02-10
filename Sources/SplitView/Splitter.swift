@@ -8,13 +8,17 @@
 
 import SwiftUI
 
+public protocol SplitDivider: View {
+    var visibleThickness: CGFloat { get }
+}
+
 /// The Splitter that separates the `primary` from `secondary` views in a `SplitView`.
-public struct Splitter: View {
+public struct Splitter: SplitDivider {
     
-    private let layout: LayoutHolder
+    @ObservedObject private var layout: LayoutHolder
     private let color: Color
     private let inset: CGFloat
-    private let visibleThickness: CGFloat
+    public let visibleThickness: CGFloat
     private var invisibleThickness: CGFloat
     
     public static var defaultColor: Color = Color.gray
