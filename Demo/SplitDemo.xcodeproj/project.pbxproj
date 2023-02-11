@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AAD5CF7329956D1C00F94B1D /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD5CF7229956D1C00F94B1D /* ExampleApp.swift */; };
+		AAD5CF7329956D1C00F94B1D /* SplitDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD5CF7229956D1C00F94B1D /* SplitDemo.swift */; };
 		AAD5CF7529956D1C00F94B1D /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD5CF7429956D1C00F94B1D /* DemoApp.swift */; };
 		AAD5CF7729956D1D00F94B1D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AAD5CF7629956D1D00F94B1D /* Assets.xcassets */; };
 		AAD5CF7A29956D1D00F94B1D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AAD5CF7929956D1D00F94B1D /* Preview Assets.xcassets */; };
@@ -19,12 +19,12 @@
 
 /* Begin PBXFileReference section */
 		AAC4D89C29956F14005FDD5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		AAD5CF6F29956D1C00F94B1D /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AAD5CF7229956D1C00F94B1D /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
+		AAD5CF6F29956D1C00F94B1D /* SplitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SplitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAD5CF7229956D1C00F94B1D /* SplitDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitDemo.swift; sourceTree = "<group>"; };
 		AAD5CF7429956D1C00F94B1D /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
 		AAD5CF7629956D1D00F94B1D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AAD5CF7929956D1D00F94B1D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		AAD5CF8329956E3300F94B1D /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
+		AAD5CF8329956E3300F94B1D /* SplitDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SplitDemo.entitlements; sourceTree = "<group>"; };
 		AAF9E0C52996F5CE00EDD306 /* DemoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoModel.swift; sourceTree = "<group>"; };
 		AAF9E0C72996F80900EDD306 /* DemoToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoToolbar.swift; sourceTree = "<group>"; };
 		AAF9E0C92996F85A00EDD306 /* DemoSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoSplitter.swift; sourceTree = "<group>"; };
@@ -45,7 +45,7 @@
 		AAD5CF6629956D1C00F94B1D = {
 			isa = PBXGroup;
 			children = (
-				AAD5CF7129956D1C00F94B1D /* Example */,
+				AAD5CF7129956D1C00F94B1D /* SplitDemo */,
 				AAD5CF7029956D1C00F94B1D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -53,17 +53,17 @@
 		AAD5CF7029956D1C00F94B1D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AAD5CF6F29956D1C00F94B1D /* Example.app */,
+				AAD5CF6F29956D1C00F94B1D /* SplitDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AAD5CF7129956D1C00F94B1D /* Example */ = {
+		AAD5CF7129956D1C00F94B1D /* SplitDemo */ = {
 			isa = PBXGroup;
 			children = (
 				AAC4D89C29956F14005FDD5C /* Info.plist */,
-				AAD5CF8329956E3300F94B1D /* Example.entitlements */,
-				AAD5CF7229956D1C00F94B1D /* ExampleApp.swift */,
+				AAD5CF8329956E3300F94B1D /* SplitDemo.entitlements */,
+				AAD5CF7229956D1C00F94B1D /* SplitDemo.swift */,
 				AAD5CF7429956D1C00F94B1D /* DemoApp.swift */,
 				AAF9E0C52996F5CE00EDD306 /* DemoModel.swift */,
 				AAF9E0C92996F85A00EDD306 /* DemoSplitter.swift */,
@@ -71,7 +71,7 @@
 				AAD5CF7629956D1D00F94B1D /* Assets.xcassets */,
 				AAD5CF7829956D1D00F94B1D /* Preview Content */,
 			);
-			path = Example;
+			path = SplitDemo;
 			sourceTree = "<group>";
 		};
 		AAD5CF7829956D1D00F94B1D /* Preview Content */ = {
@@ -85,9 +85,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AAD5CF6E29956D1C00F94B1D /* Example */ = {
+		AAD5CF6E29956D1C00F94B1D /* SplitDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AAD5CF7D29956D1D00F94B1D /* Build configuration list for PBXNativeTarget "Example" */;
+			buildConfigurationList = AAD5CF7D29956D1D00F94B1D /* Build configuration list for PBXNativeTarget "SplitDemo" */;
 			buildPhases = (
 				AAD5CF6B29956D1C00F94B1D /* Sources */,
 				AAD5CF6C29956D1C00F94B1D /* Frameworks */,
@@ -97,12 +97,12 @@
 			);
 			dependencies = (
 			);
-			name = Example;
+			name = SplitDemo;
 			packageProductDependencies = (
 				AAD5CF8129956D8500F94B1D /* SplitView */,
 			);
 			productName = Example;
-			productReference = AAD5CF6F29956D1C00F94B1D /* Example.app */;
+			productReference = AAD5CF6F29956D1C00F94B1D /* SplitDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -120,7 +120,7 @@
 					};
 				};
 			};
-			buildConfigurationList = AAD5CF6A29956D1C00F94B1D /* Build configuration list for PBXProject "Example" */;
+			buildConfigurationList = AAD5CF6A29956D1C00F94B1D /* Build configuration list for PBXProject "SplitDemo" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -136,7 +136,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AAD5CF6E29956D1C00F94B1D /* Example */,
+				AAD5CF6E29956D1C00F94B1D /* SplitDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -162,7 +162,7 @@
 				AAF9E0C82996F80900EDD306 /* DemoToolbar.swift in Sources */,
 				AAD5CF7529956D1C00F94B1D /* DemoApp.swift in Sources */,
 				AAF9E0C62996F5CE00EDD306 /* DemoModel.swift in Sources */,
-				AAD5CF7329956D1C00F94B1D /* ExampleApp.swift in Sources */,
+				AAD5CF7329956D1C00F94B1D /* SplitDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,14 +290,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SplitDemo/SplitDemo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Example/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SplitDemo/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Example/Info.plist;
+				INFOPLIST_FILE = SplitDemo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "SplitView Demo";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -310,7 +310,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.stevengharris.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stevengharris.SplitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = YES;
@@ -326,14 +326,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SplitDemo/SplitDemo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Example/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"SplitDemo/Preview Content\"";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Example/Info.plist;
+				INFOPLIST_FILE = SplitDemo/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "SplitView Demo";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -346,7 +346,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.stevengharris.Example;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stevengharris.SplitDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = YES;
@@ -360,7 +360,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AAD5CF6A29956D1C00F94B1D /* Build configuration list for PBXProject "Example" */ = {
+		AAD5CF6A29956D1C00F94B1D /* Build configuration list for PBXProject "SplitDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AAD5CF7B29956D1D00F94B1D /* Debug */,
@@ -369,7 +369,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AAD5CF7D29956D1D00F94B1D /* Build configuration list for PBXNativeTarget "Example" */ = {
+		AAD5CF7D29956D1D00F94B1D /* Build configuration list for PBXNativeTarget "SplitDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				AAD5CF7E29956D1D00F94B1D /* Debug */,

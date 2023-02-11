@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct ExampleApp: App {
+struct SplitDemo: App {
     var body: some Scene {
         WindowGroup {
             DemoApp()

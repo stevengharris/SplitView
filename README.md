@@ -1,13 +1,21 @@
 # SplitView
 
-Arrange two SwiftUI views to sit side-by-side or above-and-below each other, 
-with a draggable slider separating them to resize them. Specify the fraction of 
-full width/height to position the slider, and hide/show either view. Easily 
-track and persist the slider state to restore later. Dynamically change the 
-layout of the split views either side-by-side horizontally or above-and-below 
-vertically.
+A view modifier, `split`, that lets you:
 
-NavigationSplitView is fine for a sidebar and applications that conform to a 
+* Create a single view containing two views, arranged in a horizontal (side-by-side) 
+or vertical (above-and-below) `layout` separated by a draggable `splitter` for resizing.
+* Specify the `fraction` of full width/height for the initial position of the splitter.
+* Programmatically `hide` either view and change their `layout`.
+* Arbitrarily nest split views.
+* Easily save the state of `fraction`, `layout`, and `hide` so a split view opens 
+in its last state between application restarts.
+* Create and use your own custom `splitter`.
+* Make splitters "invisible" (i.e., zero `visibleThickness`) but still draggable for 
+resizing.
+
+## Motivation
+
+NavigationSplitView is fine for a sidebar and for applications that conform to a 
 nice master-detail type of model. On the other hand sometimes you just need two 
 views to sit side-by-side or above-and-below each other and to adjust the split 
 between them. That is what the SplitView package does for you.
@@ -17,9 +25,9 @@ between them. That is what the SplitView package does for you.
 Install the package.
 
 Everything is done using a single view modifier: `split`. The `split` modifier 
-always requires a layout, either `Horizontal` or `Vertical`. 
+always requires a `layout`, either `Horizontal` or `Vertical`. 
 
-**Note:** You can use the SplitView View directly, but in addition to information 
+**Note:** You *can* use the SplitView View directly, but in addition to information 
 about layout, it requires three types of content to be passed-in as ViewBuilders, and 
 the `split` modifier makes all of that much simpler.
 
@@ -41,7 +49,7 @@ can do this:
 Color.red.split(.Vertical, fraction: 0.25) { Color.green }
 ```
 
-Now you get a red view above the green view, with the `Primary` side (Color.red) occupying 
+Now you get a red view above the green view, with the `Primary` side (red) occupying 
 1/4 of the window.
 
 Often you want to hide/show one of the views you split. You can do this by specifying 
@@ -58,13 +66,12 @@ SideHolder ObservableObject that holds onto the side you are hiding. Similarly S
 comes with a FractionHolder and LayoutHolder. Under the covers, the SplitView that results 
 from the `split` modifier observes all of these holders and redraws itself if they change. 
 
-You would normally hold onto the holders using @State in your view, but here is a simple 
-example showing how to use the SideHolder with a Button to hide/show the Secondary (green) 
-side:
+Here is an example showing how to use the SideHolder with a Button to hide/show the 
+Secondary (green) side:
 
 ```
 struct ContentView: View {
-    let hide = SideHolder() // By default, don't hide any side
+    let hide = SideHolder()         // By default, don't hide any side
     var body: some View {
         VStack(spacing: 0) {
             Button("Toggle Hide") {
@@ -77,6 +84,10 @@ struct ContentView: View {
     }
 }
 ```
+
+Note that the `split` modifier accepts `hide` passed as a SplitSide - `.Secondary` or `.Primary` -
+or as a SideHolder. Similarly, `layout` can be passed as a SplitLayout - `.Horizontal` or `.Vertical` - 
+or as a LayoutHolder. And `fraction` can be passed as a CGFloat or as a FractionHolder.
 
 ### Nesting Split Views
 
@@ -114,9 +125,10 @@ struct ContentView: View {
 
 The three holders - SideHolder, LayoutHolder, and FractionHolder - all come with a 
 static method to return instances that get/set their state from UserDefaults.standard. 
-Let's expand the previous example to be able to adjust the layout and to get/set the 
-state from UserDefaults. The first time you open this, the sides will be split 50-50, 
-but as you slide the splitter, the fraction state is retained in UserDefaults.standard.
+Let's expand the previous example to be able to change the `layout` and `hide` state 
+and to get/set their values from UserDefaults. The first time you open this, the sides 
+will be split 50-50, but as you drag the splitter, the `fraction` state is also retained 
+in UserDefaults.standard.
 
 ```
 struct ContentView: View {
@@ -143,9 +155,104 @@ struct ContentView: View {
 }
 ```
 
-You change the layout and hide/show the green view, and when you next open the app, 
+You can change the `layout` and hide/show the green view, and when you next open the app, 
 they will be restored how you left them. Similarly, if you moved the splitter around, 
 when you open the app again, it will open where you left it.
+
+### Custom Splitters
+
+By default the `split` modifier produces a SplitView that uses the default Splitter. You can 
+create your own and use it, though. Your custom splitter has to conform to SplitDivider 
+protocol, which makes sure your custom splitter can let the SplitView know what its 
+`visibleThickness` is. The `visibleThickness` is the size your custom splitter displays 
+itself in and also defines the `spacing` between the Primary and Secondary views inside 
+of SplitView.
+
+Here is an example custom splitter whose contents is sensitive to the observed `layout` 
+and `hide` state:
+
+```
+struct CustomSplitter: SplitDivider {
+    var visibleThickness: CGFloat = 20
+    @ObservedObject var layout: LayoutHolder
+    @ObservedObject var hide: SideHolder
+    let hideRight = Image(systemName: "arrowtriangle.right.square")
+    let hideLeft = Image(systemName: "arrowtriangle.left.square")
+    let hideDown = Image(systemName: "arrowtriangle.down.square")
+    let hideUp = Image(systemName: "arrowtriangle.up.square")
+    
+    var body: some View {
+        if layout.isHorizontal {
+            ZStack {
+                Color.clear
+                    .frame(width: 30)
+                    .padding(0)
+                Button(
+                    action: { withAnimation { hide.toggle() } },
+                    label: {
+                        hide.value == nil ? hideRight.imageScale(.large) : hideLeft.imageScale(.large)
+                    }
+                )
+                .buttonStyle(.borderless)
+            }
+            .contentShape(Rectangle())
+        } else {
+            ZStack {
+                Color.clear
+                    .frame(height: 30)
+                    .padding(0)
+                Button(
+                    action: { withAnimation { hide.toggle() } },
+                    label: {
+                        hide.value == nil ? hideDown.imageScale(.large) : hideUp.imageScale(.large)
+                    }
+                )
+                .buttonStyle(.borderless)
+            }
+            .contentShape(Rectangle())
+        }
+    }
+    
+}
+``` 
+
+You can use the CustomSplitter like this:
+
+```
+struct ContentView: View {
+    let layout = LayoutHolder()
+    let hide = SideHolder()
+    var body: some View {
+        Color.red
+        .split(
+            layout,
+            hide,
+            splitter: { CustomSplitter(layout: layout, hide: hide) },
+            secondary: { Color.green }
+        )
+    }
+}
+```
+
+### Invisible Splitters
+
+You might want the views you split to be adjustable using the splitter, but for the splitter 
+itself to be invisible. For example, a "normal" sidebar doesn't show a splitter between it 
+and the detail view it sits next to. You can do this with the standard Splitter by passing 
+a custom splitter but just using the standard Splitter with `visibleThickness` set to zero:
+
+```
+struct ContentView: View {
+    var body: some View {
+        Color.red
+        .split(
+            .Horizontal,
+            splitter: { Splitter(.Horizontal, visibleThickness: 0) },
+            secondary: { Color.green }
+        )
+    }
+}
+```
 
 ## Example Demo
 
@@ -170,9 +277,20 @@ I don't see this message when using SplitView with "real" SwiftUI views and have
 many different ways to prevent it, but in the end, it just seems like a harmless but 
 annoying log message that is beyond the control of anyone but Apple.
 
+## Possible Enhancements
+
+I might add a few things but would be very happy to accept pull requests! For example:
+
+* A splitter that adapted to device orientation and form factors somewhat like 
+NavigationSplitView does.
+* Accept a minimum size for dragging. This doesn't seem important to me as long 
+as the splitter has a reasonable `visibleThickness`, but when the splitter is 
+invisible, it will be confusing when it's dragged to the edges of the view.
+* Do a better job generalizing the default settings so as to be set programmatically.
+
 ## History
 
-### Version 1.0.1
+### Version 1.0
 
 Make layout adjustable. Clean up and formalize the Example demo. Update the README.
 

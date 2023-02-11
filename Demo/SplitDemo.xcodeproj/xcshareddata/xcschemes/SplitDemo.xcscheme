@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AAD5CF6E29956D1C00F94B1D"
-               BuildableName = "Example.app"
-               BlueprintName = "Example"
-               ReferencedContainer = "container:Example.xcodeproj">
+               BuildableName = "SplitDemo.app"
+               BlueprintName = "SplitDemo"
+               ReferencedContainer = "container:SplitDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AAD5CF6E29956D1C00F94B1D"
-            BuildableName = "Example.app"
-            BlueprintName = "Example"
-            ReferencedContainer = "container:Example.xcodeproj">
+            BuildableName = "SplitDemo.app"
+            BlueprintName = "SplitDemo"
+            ReferencedContainer = "container:SplitDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -63,9 +63,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "AAD5CF6E29956D1C00F94B1D"
-            BuildableName = "Example.app"
-            BlueprintName = "Example"
-            ReferencedContainer = "container:Example.xcodeproj">
+            BuildableName = "SplitDemo.app"
+            BlueprintName = "SplitDemo"
+            ReferencedContainer = "container:SplitDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
