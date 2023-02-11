@@ -28,18 +28,20 @@ resizing.
 NavigationSplitView is fine for a sidebar and for applications that conform to a 
 nice master-detail type of model. On the other hand sometimes you just need two 
 views to sit side-by-side or above-and-below each other and to adjust the split 
-between them. That is what the SplitView package does for you.
+between them. That is what the `split` modifier does for you.
 
 ## Demo
 
-https://user-images.githubusercontent.com/1020361/180887217-21d7bb3e-f410-43f7-8541-23e3892012b7.mov
+![SplitView](https://user-images.githubusercontent.com/1020361/218280797-72c796eb-e78c-415b-a6a3-6d49b3e39e72.mov)
+
+This demo is available in the Demo directory as SplitDemo.xcodeproj. 
 
 ## Usage
 
 Install the package.
 
 Everything is done using a single view modifier: `split`. The `split` modifier 
-always requires a `layout`, either `Horizontal` or `Vertical`. 
+always requires a `layout`, either `.Horizontal` or `.Vertical`. 
 
 **Note:** You *can* use the SplitView View directly, but in addition to information 
 about layout, it requires three types of content to be passed-in as ViewBuilders, and 
@@ -179,8 +181,12 @@ By default the `split` modifier produces a SplitView that uses the default Split
 create your own and use it, though. Your custom splitter has to conform to SplitDivider 
 protocol, which makes sure your custom splitter can let the SplitView know what its 
 `visibleThickness` is. The `visibleThickness` is the size your custom splitter displays 
-itself in and also defines the `spacing` between the Primary and Secondary views inside 
+itself in, and it also defines the `spacing` between the Primary and Secondary views inside 
 of SplitView.
+
+The SplitView detects drag events occurring in the splitter. For this reason, you might want 
+to use a ZStack with an underlying Color.clear that represents the "invisibleThickness" if 
+the `visibleThickness` is too small for properly detecting the drag events.
 
 Here is an example custom splitter whose contents is sensitive to the observed `layout` 
 and `hide` state:
@@ -199,7 +205,7 @@ struct CustomSplitter: SplitDivider {
         if layout.isHorizontal {
             ZStack {
                 Color.clear
-                    .frame(width: 30)
+                    .frame(width: 30)   // Larger than the visibleThickness
                     .padding(0)
                 Button(
                     action: { withAnimation { hide.toggle() } },
@@ -223,7 +229,7 @@ struct CustomSplitter: SplitDivider {
                 )
                 .buttonStyle(.borderless)
             }
-            .contentShape(Rectangle())
+            .contentShape(Rectangle())  // So the drag event is detected for the entire splitter
         }
     }
     
@@ -252,8 +258,8 @@ struct ContentView: View {
 
 You might want the views you split to be adjustable using the splitter, but for the splitter 
 itself to be invisible. For example, a "normal" sidebar doesn't show a splitter between it 
-and the detail view it sits next to. You can do this with the standard Splitter by passing 
-a custom splitter but just using the standard Splitter with `visibleThickness` set to zero:
+and the detail view it sits next to. You can do this using the standard Splitter with 
+`visibleThickness` set to zero, and passing that as the custom splitter.
 
 ```
 struct ContentView: View {
@@ -267,13 +273,6 @@ struct ContentView: View {
     }
 }
 ```
-
-## Example Demo
-
-Clone the repo and open SplitDemo.xcodeproj. 
-
-The example works on iOS, MacOS, and Mac Catalyst. It uses the `split` modifier 
-exclusively.
 
 ## Issues
 
