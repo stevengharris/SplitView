@@ -1,3 +1,13 @@
+<p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.6-blue.svg">
+    <img src="https://img.shields.io/badge/iOS-15.6+-blue.svg" alt="iOS 15.6+">
+    <img src="https://img.shields.io/badge/MacCatalyst-15.6-blue" alt="MacCatalyst 15.6+">
+    <img src="https://img.shields.io/badge/Mac-12.4-blue" alt="MacCatalyst 12.4+">
+    <a href="https://mastodon.social/@stevengharris">
+        <img src="https://img.shields.io/badge/Contact-@stevengharris-lightgrey.svg?style=flat" alt="Mastodon: @stevengharris@mastodon.social">
+    </a>
+</p>
+
 # SplitView
 
 A view modifier, `split`, that lets you:
@@ -19,6 +29,10 @@ NavigationSplitView is fine for a sidebar and for applications that conform to a
 nice master-detail type of model. On the other hand sometimes you just need two 
 views to sit side-by-side or above-and-below each other and to adjust the split 
 between them. That is what the SplitView package does for you.
+
+## Demo
+
+https://user-images.githubusercontent.com/1020361/180887217-21d7bb3e-f410-43f7-8541-23e3892012b7.mov
 
 ## Usage
 
@@ -256,12 +270,10 @@ struct ContentView: View {
 
 ## Example Demo
 
-Clone the repo and open Example.xcodeproj. 
+Clone the repo and open SplitDemo.xcodeproj. 
 
 The example works on iOS, MacOS, and Mac Catalyst. It uses the `split` modifier 
 exclusively.
-
-https://user-images.githubusercontent.com/1020361/180887217-21d7bb3e-f410-43f7-8541-23e3892012b7.mov
 
 ## Issues
 
@@ -292,7 +304,7 @@ invisible, it will be confusing when it's dragged to the edges of the view.
 
 ### Version 1.0
 
-Make layout adjustable. Clean up and formalize the Example demo. Update the README.
+Make layout adjustable. Clean up and formalize the SplitDemo, including the custom splitter and "invisible" splitter. Update the README.
 
 ### Version 0.2
 
