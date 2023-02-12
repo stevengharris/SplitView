@@ -1,8 +1,8 @@
 <p align="center">
-    <img src="https://img.shields.io/badge/Swift-5.6-blue.svg">
+    <img src="https://img.shields.io/badge/Swift-5.6+-blue.svg">
     <img src="https://img.shields.io/badge/iOS-15.6+-blue.svg" alt="iOS 15.6+">
-    <img src="https://img.shields.io/badge/MacCatalyst-15.6-blue" alt="MacCatalyst 15.6+">
-    <img src="https://img.shields.io/badge/Mac-12.4-blue" alt="MacCatalyst 12.4+">
+    <img src="https://img.shields.io/badge/MacCatalyst-15.6+-blue" alt="MacCatalyst 15.6+">
+    <img src="https://img.shields.io/badge/Mac-12.4+-blue" alt="MacCatalyst 12.4+">
     <a href="https://mastodon.social/@stevengharris">
         <img src="https://img.shields.io/badge/Contact-@stevengharris-lightgrey.svg?style=flat" alt="Mastodon: @stevengharris@mastodon.social">
     </a>
@@ -19,7 +19,7 @@ or vertical (above-and-below) `layout` separated by a draggable `splitter` for r
 * Arbitrarily nest split views.
 * Easily save the state of `fraction`, `layout`, and `hide` so a split view opens 
 in its last state between application restarts.
-* Create and use your own custom `splitter`.
+* Use your own custom `splitter` or the default Splitter.
 * Make splitters "invisible" (i.e., zero `visibleThickness`) but still draggable for 
 resizing.
 
