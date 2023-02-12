@@ -2,4 +2,5 @@
 .build/
 .swiftpm/xcode/
 xcuserdata/
-Example/Example.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+Demo/SplitDemo.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+Demo/SplitDemo.xcworkspace/
