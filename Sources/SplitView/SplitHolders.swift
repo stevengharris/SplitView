@@ -83,13 +83,17 @@ public class FractionHolder: ObservableObject {
 ///
 /// Use the static `usingUserDefaults` method to save state automatically in `UserDefaults.standard`.
 public class SideHolder: ObservableObject {
-    @Published public var value: SplitSide? {
+    @Published private var value: SplitSide? {
         didSet {
             setter?(value)
         }
     }
     public var getter: (()->SplitSide?)?
     public var setter: ((SplitSide?)->Void)?
+    public var side: SplitSide? {
+        get { value }
+        set { setValue(newValue) }
+    }
     private var oldValue: SplitSide?
     
     public init(_ hide: SplitSide? = nil, getter: (()->SplitSide?)? = nil, setter: ((SplitSide?)->Void)? = nil) {
@@ -109,9 +113,10 @@ public class SideHolder: ObservableObject {
     }
     
     private func setValue(_ side: SplitSide?) {
-        let newOldValue = value
+        guard value != side else { return }
+        let oldSide = value
         value = side
-        oldValue = newOldValue
+        oldValue = oldSide
     }
     
     public static func usingUserDefaults(_ hide: SplitSide? = nil, key: String) -> SideHolder {

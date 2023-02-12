@@ -94,7 +94,7 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
         case .Horizontal:
             return DragGesture()
                 .onChanged { gesture in
-                    hide.value = nil
+                    hide.side = nil
                     privateFraction = min(1, max(0, gesture.location.x / size.width))
                 }
                 .onEnded { gesture in
@@ -103,7 +103,7 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
         case .Vertical:
             return DragGesture()
                 .onChanged { gesture in
-                    hide.value = nil
+                    hide.side = nil
                     privateFraction = min(1, max(0, gesture.location.y / size.height))
                 }
                 .onEnded { gesture in
@@ -121,7 +121,7 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     /// The length of primary in the layout direction, without regard to any inset for the Splitter
     private func pLength(in size: CGSize) -> CGFloat {
         let length = layout.isHorizontal ? size.width : size.height
-        guard let side = hide.value else {
+        guard let side = hide.side else {
             return length * privateFraction
         }
         return side == .Secondary ? length : 0
@@ -130,7 +130,7 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     /// The length of secondary in the layout direction, without regard to any inset for the Splitter
     private func sLength(in size: CGSize) -> CGFloat {
         let length = layout.isHorizontal ? size.width : size.height
-        guard let side = hide.value else {
+        guard let side = hide.side else {
             return length - pLength(in: size)
         }
         return side == .Primary ? length : 0

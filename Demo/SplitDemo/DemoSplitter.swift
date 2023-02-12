@@ -38,7 +38,7 @@ struct DemoSplitter: SplitDivider {
                 Button(
                     action: { withAnimation { hide.toggle() } },
                     label: {
-                        hide.value == nil ? hideRight.imageScale(.large) : hideLeft.imageScale(.large)
+                        hide.side == nil ? hideRight.imageScale(.large) : hideLeft.imageScale(.large)
                     }
                 )
                 .buttonStyle(.borderless)
@@ -52,7 +52,7 @@ struct DemoSplitter: SplitDivider {
                 Button(
                     action: { withAnimation { hide.toggle() } },
                     label: {
-                        hide.value == nil ? hideDown.imageScale(.large) : hideUp.imageScale(.large)
+                        hide.side == nil ? hideDown.imageScale(.large) : hideUp.imageScale(.large)
                     }
                 )
                 .buttonStyle(.borderless)

@@ -70,7 +70,7 @@ struct AdjustHideButton: View {
                 }
             },
             label: {
-                if hide.value == nil {
+                if hide.side == nil {
                     Image(systemName: "square")
                 } else {
                     if layout.isHorizontal {
@@ -101,7 +101,7 @@ struct AdjustLayoutButton: View {
                 layout.isHorizontal ? Image(systemName: "square.split.1x2") : Image(systemName: "square.split.2x1")
             }
         )
-        .disabled(hide.value != nil)
+        .disabled(hide.side != nil)
     }
     
 }
