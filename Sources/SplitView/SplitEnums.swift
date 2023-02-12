@@ -1,6 +1,6 @@
 //
 //  SplitEnums.swift
-//  
+//  SplitView
 //
 //  Created by Steven Harris on 1/31/23.
 //

@@ -3,7 +3,6 @@
 //  SplitView
 //
 //  Created by Steven Harris on 8/18/21.
-//  Copyright © 2021 Steven Harris. All rights reserved.
 //
 
 import SwiftUI

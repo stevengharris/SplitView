@@ -1,6 +1,6 @@
 //
 //  SplitHolders.swift
-//  
+//  SplitView
 //
 //  Created by Steven Harris on 2/8/23.
 //

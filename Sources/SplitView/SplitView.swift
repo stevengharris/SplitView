@@ -3,7 +3,6 @@
 //  SplitView
 //
 //  Created by Steven Harris on 8/9/21.
-//  Copyright © 2021 Steven Harris. All rights reserved.
 //
 
 import SwiftUI
@@ -11,12 +10,9 @@ import SwiftUI
 /// A View with a draggable `splitter` between `primary` and `secondary`.
 ///
 /// Views are layed out either horizontally or vertically as defined by `layout`
-/// and separated by `spacing`. By default, `spacing` is set to
-/// `Splitter.defaultVisibleThickness` and the `splitter` is
-/// centered within it. Be aware of this default when creating a custom `splitter` with
-/// a visible thickness different than `Splitter.defaultVisibleThickness`.
-///
-/// Why D for the generic `splitter`? S was used for `secondary`, and D makes sense as "Divider".
+/// and separated by `spacing`. The`spacing` is set to
+/// `Splitter.visibleThickness` and the `splitter` is
+/// centered within it.
 public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     private let spacing: CGFloat
     /// Used to change the SplitLayout of a SplitView
