@@ -106,7 +106,7 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
             return DragGesture()
                 .onChanged { gesture in
                     hide.side = nil    // Otherwise will not be draggable if hidden
-                    privateFraction = min(1 - (minPFraction ?? 0), max(minSFraction ?? 0, gesture.location.x / size.width))
+                    privateFraction = min(1 - (minSFraction ?? 0), max(minPFraction ?? 0, gesture.location.x / size.width))
                 }
                 .onEnded { gesture in
                     updateFraction(to: privateFraction)
@@ -115,7 +115,7 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
             return DragGesture()
                 .onChanged { gesture in
                     hide.side = nil    // Otherwise will not be draggable if hidden
-                    privateFraction = min(1 - (minPFraction ?? 0), max(minSFraction ?? 0, gesture.location.y / size.height))
+                    privateFraction = min(1 - (minSFraction ?? 0), max(minPFraction ?? 0, gesture.location.y / size.height))
                 }
                 .onEnded { gesture in
                     updateFraction(to: privateFraction)

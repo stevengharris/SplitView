@@ -32,7 +32,7 @@ struct DemoApp: View {
                 let hide1 = demo.holders[1].hide
                 let layout2 = demo.holders[2].layout
                 let hide2 = demo.holders[2].hide
-                let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.2)
+                let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.1)
                 Color.green
                     .split(layout0, hide: hide0) {
                         Color.red
