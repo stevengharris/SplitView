@@ -33,9 +33,10 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     private let hasInitialFraction: Bool
     /// The key state that changes the split between `primary` and `secondary`
     @State private var privateFraction: CGFloat
-    private var spacing: CGFloat { splitter.visibleThickness }
-    var minPFraction: CGFloat? { config.minPFraction }
-    var minSFraction: CGFloat? { config.minSFraction }
+    /// Spacing is zero when the splitter isn't showing; i.e., when it is not draggable.
+    private var spacing: CGFloat { isDraggable() ? splitter.visibleThickness : 0 }
+    let minPFraction: CGFloat?
+    let minSFraction: CGFloat?
     
     public var body: some View {
         GeometryReader { geometry in
@@ -53,16 +54,19 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
             let sWidth = max(minSLength, horizontal ? sLength - spacing / 2 : breadth)
             let sHeight = max(minSLength, horizontal ? breadth : min(height - spacing, sLength - spacing / 2))
             let sOffset = horizontal ? CGSize(width: pWidth + spacing, height: 0) : CGSize(width: 0, height: pHeight + spacing)
-            let center = horizontal ? CGPoint(x: sOffset.width - spacing / 2, y: height / 2) : CGPoint(x: width / 2, y: sOffset.height - spacing / 2)
+            let center = horizontal ? CGPoint(x: pWidth + spacing / 2, y: height / 2) : CGPoint(x: width / 2, y: pHeight + spacing / 2)
             ZStack(alignment: .topLeading) {
                 primary
                     .frame(width: pWidth, height: pHeight)
                 secondary
                     .frame(width: sWidth, height: sHeight)
                     .offset(sOffset)
-                splitter
-                    .position(center)
-                    .gesture(drag(in: size))
+                // Only show the splitter if it is draggable. See isDraggable comments.
+                if isDraggable() {
+                    splitter
+                        .position(center)
+                        .gesture(drag(in: size))
+                }
             }
             .clipped()  // Can cause problems in some List styles if not clipped
             .environmentObject(layout)
@@ -71,14 +75,16 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     
     public init(_ layout: LayoutHolder, fraction: FractionHolder? = nil, hide: SideHolder? = nil, config: SplitConfig? = nil, @ViewBuilder primary: (()->P), @ViewBuilder splitter: (()->D), @ViewBuilder secondary: (()->S)) {
         self.layout = layout
-        hasInitialFraction = fraction != nil                            // True updates fraction's value after drag
         self.fraction = fraction ?? FractionHolder()
         self.hide = hide ?? SideHolder()
         self.config = config ?? SplitConfig()
-        _privateFraction = State(initialValue: fraction?.value ?? 0.5)  // Local fraction updated during drag
         self.primary = primary()
         self.splitter = splitter()
         self.secondary = secondary()
+        hasInitialFraction = fraction != nil                            // True updates fraction's value after drag
+        _privateFraction = State(initialValue: fraction?.value ?? 0.5)  // Local fraction updated during drag
+        minPFraction = self.config.minPFraction
+        minSFraction = self.config.minSFraction
     }
     
     public init(_ layout: SplitLayout, spacing: CGFloat? = nil, fraction: FractionHolder? = nil, hide: SideHolder? = nil, config: SplitConfig? = nil, @ViewBuilder primary: (()->P), @ViewBuilder splitter: (()->D), @ViewBuilder secondary: (()->S)) {
@@ -99,27 +105,19 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
         case .Horizontal:
             return DragGesture()
                 .onChanged { gesture in
-                    // Prevent dragging in certain cases
-                    guard isDraggable() else { return }
                     hide.side = nil    // Otherwise will not be draggable if hidden
                     privateFraction = min(1 - (minPFraction ?? 0), max(minSFraction ?? 0, gesture.location.x / size.width))
                 }
                 .onEnded { gesture in
-                    // Prevent updating in certain cases
-                    guard isDraggable() else { return }
                     updateFraction(to: privateFraction)
                 }
         case .Vertical:
             return DragGesture()
                 .onChanged { gesture in
-                    // Prevent dragging in certain cases
-                    guard isDraggable() else { return }
                     hide.side = nil    // Otherwise will not be draggable if hidden
                     privateFraction = min(1 - (minPFraction ?? 0), max(minSFraction ?? 0, gesture.location.y / size.height))
                 }
                 .onEnded { gesture in
-                    // Prevent updating in certain cases
-                    guard isDraggable() else { return }
                     updateFraction(to: privateFraction)
                 }
         }

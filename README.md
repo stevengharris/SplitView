@@ -201,7 +201,10 @@ it out from its hidden state. You can unhide it, though. Why? Because it doesn't
 make sense to be able to drag from the hidden side when you never could have dragged 
 it to that location to begin with because of the fraction constraint. As soon as you 
 tried to drag it, the slider would snap to an allowed position, which is also jarring 
-to users.
+to users. To make sure there is no visual confusion about whether a splitter can be 
+dragged, the splitter will not shown at all when it is not draggable. Again: a 
+splitter will only be non-draggable when a side is hidden and the corresponding 
+`minPFraction` or `minSFraction` is specified.
 
 ### Custom Splitters
 
@@ -339,6 +342,16 @@ I might add a few things but would be very happy to accept pull requests! For ex
 NavigationSplitView does.
 
 ## History
+
+### Version 1.1
+
+* Generalize the way configuration of SplitView properties are handled using SplitConfig, which can optionally be passed to the `split` modifier. 
+There is a minor compatibility change in that properties such as `color` and `visibleThickness` must be passed to the default Splitter using SplitConfig.
+* Allow minimum fractions - `minPFraction` and `minSFraction` - to be configured in SplitConfig to constrain the size of the `primary` and/or `secondary` views.
+* If a minimum fraction is specified for a side and that side is hidden, then the splitter will be hidden, too. The net effect of this change is 
+that the hidden side cannot be dragged open when it is hidden and a minimum fraction is specified for a side. It can still be unhidden by 
+changing its SideHolder. Under these conditions, the unhidden side occupies the full width/height when the other is hidden, without any inset 
+for the splitter.
 
 ### Version 1.0
 

@@ -32,12 +32,13 @@ struct DemoApp: View {
                 let hide1 = demo.holders[1].hide
                 let layout2 = demo.holders[2].layout
                 let hide2 = demo.holders[2].hide
+                let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.2)
                 Color.green
                     .split(layout0, hide: hide0) {
                         Color.red
                             .split(layout1, hide: hide1) {
                                 Color.blue
-                                    .split(layout2, hide: hide2) {
+                                    .split(layout2, hide: hide2, config: config) {
                                         Color.yellow
                                     }
                             }
@@ -45,7 +46,7 @@ struct DemoApp: View {
             case .invisibleSplitter:
                 let layout0 = demo.holders[0].layout
                 let hide0 = demo.holders[0].hide
-                let config = SplitConfig(minPFraction: 0.15, minSFraction: 0.15, visibleThickness: 0)
+                let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.2, visibleThickness: 0)
                 Color.green
                     .split(
                         layout0,
