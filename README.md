@@ -136,7 +136,6 @@ struct ContentView: View {
 }
 ```
 
-
 ### Using UserDefaults for Split State
 
 The three holders - SideHolder, LayoutHolder, and FractionHolder - all come with a 
@@ -174,6 +173,35 @@ struct ContentView: View {
 You can change the `layout` and hide/show the green view, and when you next open the app, 
 they will be restored how you left them. Similarly, if you moved the splitter around, 
 when you open the app again, it will open where you left it.
+
+### Modifying and Constraining the Default Splitter 
+
+You can change the way the default Splitter displays using SplitConfig and passing it 
+to the `split` modifier. For example, you can change the color, inset, and thickness:
+
+```
+let config = SplitConfig(color: Color.cyan, inset: 4, visibleThickness: 8)
+Color.red.split(.Vertical, fraction: 0.25, config: config) { Color.green }
+```
+
+By default, the splitter can be dragged across the full width/height of the split 
+view. SplitConfig also lets you constrain the minimum faction of the overall view 
+that the `primary` and/or `secondary` view occupies, so the splitter always stays 
+within those constraints. You can do this by specifying `minPFraction` and/or 
+`minSFraction` in SplitConfig:
+
+```
+let config = SplitConfig(color: Color.cyan, minPFraction: 0.2, minSFraction: 0.2)
+Color.red.split(.Vertical, fraction: 0.25, config: config) { Color.green }
+```
+
+One thing to note is that if you specify `minPFraction` or `minSFraction`, then when 
+you hide a side that has its minimum fraction specified, you won't be able to drag 
+it out from its hidden state. You can unhide it, though. Why? Because it doesn't
+make sense to be able to drag from the hidden side when you never could have dragged 
+it to that location to begin with because of the fraction constraint. As soon as you 
+tried to drag it, the slider would snap to an allowed position, which is also jarring 
+to users.
 
 ### Custom Splitters
 
@@ -244,12 +272,12 @@ struct ContentView: View {
     let hide = SideHolder()
     var body: some View {
         Color.red
-        .split(
-            layout,
-            hide,
-            splitter: { CustomSplitter(layout: layout, hide: hide) },
-            secondary: { Color.green }
-        )
+            .split(
+                layout,
+                hide,
+                splitter: { CustomSplitter(layout: layout, hide: hide) },
+                secondary: { Color.green }
+            )
     }
 }
 ```
@@ -261,15 +289,30 @@ itself to be invisible. For example, a "normal" sidebar doesn't show a splitter 
 and the detail view it sits next to. You can do this using the standard Splitter with 
 `visibleThickness` set to zero, and passing that as the custom splitter.
 
+One thing to watch out for with an invisible splitter is that when a side is hidden, there 
+is no visual indication that it can be dragged back out. To prevent this issue, you should 
+specify `minPFraction` and `midSFraction` when setting `visibleThickness` to zero.
+
 ```
 struct ContentView: View {
+    let hide = SideHolder()
+    let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.2, visibleThickness: 0)
     var body: some View {
-        Color.red
-        .split(
-            .Horizontal,
-            splitter: { Splitter(.Horizontal, visibleThickness: 0) },
-            secondary: { Color.green }
-        )
+        VStack(spacing: 0) {
+            Button("Toggle Hide") {
+                withAnimation {
+                    hide.toggle()   // Toggle between hiding nothing and hiding Secondary
+                }
+            }
+            Color.red
+                .split(
+                    .Horizontal,
+                    hide: hide,
+                    config: config,
+                    splitter: { Splitter(.Horizontal, config: config) },
+                    secondary: { Color.green }
+                )
+        }
     }
 }
 ```
@@ -294,10 +337,6 @@ I might add a few things but would be very happy to accept pull requests! For ex
 
 * A splitter that adapted to device orientation and form factors somewhat like 
 NavigationSplitView does.
-* Accept a minimum size for dragging. This doesn't seem important to me as long 
-as the splitter has a reasonable `visibleThickness`, but when the splitter is 
-invisible, it will be confusing when it's dragged to the edges of the view.
-* Do a better job generalizing the default settings so as to be set programmatically.
 
 ## History
 
