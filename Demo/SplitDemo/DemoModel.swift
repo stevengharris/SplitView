@@ -29,12 +29,12 @@ let demos: [DemoID : Demo] = [
     .simpleDefaults :
         Demo(
             label: "Simple defaults",
-            description: "Single split view with the default Splitter."
+            description: "Split view with the default Splitter."
         ),
     .simpleAdjustable :
         Demo(
             label: "Simple adjustable",
-            description: "Single adjustable split view with the default Splitter",
+            description: "Adjustable split view with cyan default Splitter",
             holders: [SplitStateHolder(layout: LayoutHolder(), hide: SideHolder())]
         ),
     .nestedAdjustable :
@@ -50,12 +50,13 @@ let demos: [DemoID : Demo] = [
     .invisibleSplitter:
         Demo(
             label: "Invisible splitter",
-            description: "Single split view with invisible splitter."
+            description: "Invisible splitter with constraints.",
+            holders: [SplitStateHolder(layout: LayoutHolder(), hide: SideHolder())]
         ),
     .customSplitter:
         Demo(
             label: "Custom splitter",
-            description: "Single adjustable split view with a custom splitter.",
+            description: "Custom splitter that adjusts to layout/hide.",
             holders: [SplitStateHolder(layout: LayoutHolder(.Horizontal), hide: SideHolder())]
         ),
 ]

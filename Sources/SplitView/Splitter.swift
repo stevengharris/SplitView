@@ -15,13 +15,14 @@ public protocol SplitDivider: View {
 public struct Splitter: SplitDivider {
     
     @ObservedObject private var layout: LayoutHolder
-    private let color: Color
-    private let inset: CGFloat
-    public let visibleThickness: CGFloat
-    private var invisibleThickness: CGFloat
+    private let config: SplitConfig
+    private var color: Color { config.color }
+    private var inset: CGFloat { config.inset }
+    public var visibleThickness: CGFloat { config.visibleThickness }
+    private var invisibleThickness: CGFloat { config.invisibleThickness }
     
     public static var defaultColor: Color = Color.gray
-    public static var defaultInset: CGFloat = 8
+    public static var defaultInset: CGFloat = 6
     public static var defaultVisibleThickness: CGFloat = 4
     public static var defaultInvisibleThickness: CGFloat = 30
     public static var horizontal: Splitter = Splitter(.Horizontal)
@@ -65,16 +66,13 @@ public struct Splitter: SplitDivider {
         */
     }
     
-    public init(_ layout: LayoutHolder, color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
+    public init(_ layout: LayoutHolder, config: SplitConfig? = nil) {
         self.layout = layout
-        self.color = color ?? Self.defaultColor
-        self.inset = inset ?? Self.defaultInset
-        self.visibleThickness = visibleThickness ?? Self.defaultVisibleThickness
-        self.invisibleThickness = invisibleThickness ?? Self.defaultInvisibleThickness
+        self.config = config ?? SplitConfig()
     }
     
-    public init(_ layout: SplitLayout, color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
-        self.init(LayoutHolder(layout), color: color, inset: inset, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness)
+    public init(_ layout: SplitLayout, config: SplitConfig? = nil) {
+        self.init(LayoutHolder(layout), config: config)
     }
     
 }

@@ -22,8 +22,9 @@ struct DemoApp: View {
             case .simpleAdjustable:
                 let layout0 = demo.holders[0].layout
                 let hide0 = demo.holders[0].hide
+                let config = SplitConfig(color: .cyan)
                 Color.green
-                    .split(layout0, hide: hide0) { Color.red }
+                    .split(layout0, hide: hide0, config: config) { Color.red }
             case .nestedAdjustable:
                 let layout0 = demo.holders[0].layout
                 let hide0 = demo.holders[0].hide
@@ -42,10 +43,15 @@ struct DemoApp: View {
                             }
                     }
             case .invisibleSplitter:
+                let layout0 = demo.holders[0].layout
+                let hide0 = demo.holders[0].hide
+                let config = SplitConfig(minPFraction: 0.15, minSFraction: 0.15, visibleThickness: 0)
                 Color.green
                     .split(
-                        .Horizontal,
-                        splitter: { Splitter(.Horizontal, visibleThickness: 0) },
+                        layout0,
+                        hide: hide0,
+                        config: config,
+                        splitter: { Splitter(layout0, config: config) },
                         secondary: { Color.red }
                     )
             case .customSplitter:
