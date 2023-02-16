@@ -18,7 +18,7 @@ struct DemoApp: View {
             switch demoID {
             case .simpleDefaults:
                 Color.green
-                    .split(.Horizontal) { Color.red }
+                    .split(.horizontal) { Color.red }
             case .simpleAdjustable:
                 let layout0 = demo.holders[0].layout
                 let hide0 = demo.holders[0].hide
@@ -46,13 +46,13 @@ struct DemoApp: View {
             case .invisibleSplitter:
                 let layout0 = demo.holders[0].layout
                 let hide0 = demo.holders[0].hide
-                let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.2, visibleThickness: 0)
+                let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.2)
                 Color.green
                     .split(
                         layout0,
                         hide: hide0,
                         config: config,
-                        splitter: { Splitter(layout0, config: config) },
+                        splitter: { Splitter.invisible(layout0) },
                         secondary: { Color.red }
                     )
             case .customSplitter:
@@ -65,6 +65,50 @@ struct DemoApp: View {
                         splitter: { DemoSplitter(layout: layout0, hide: hide0) },
                         secondary: { Color.red }
                     )
+            case .sidebars:
+                let leftItems = ["Master Item 1", "Master Item 2", "Master Item 3", "Master Item 4"]
+                let leftConfig = SplitConfig(minPFraction: 0.15, minSFraction: 0.15, priority: .primary)
+                let middleText = "Note how each sidebar can be resized without affecting the other one, and how the window can be resized while both sidebars remain the same size."
+                let rightHide = demo.holders[0].hide
+                let layout = demo.holders[0].layout
+                let rightConfig = SplitConfig(minPFraction: 0.3, minSFraction: 0.15, priority: .secondary)
+                let rightText = "Here is some metadata about what's showing in the middle that you want to hide/show."
+                List(leftItems, id: \.self) { item in
+                    Text(item)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
+                .listStyle(.plain)
+                .padding([.top], 8)
+                .split(
+                    layout,
+                    fraction: 0.2,
+                    config: leftConfig,
+                    splitter: { Splitter.line(layout) },
+                    secondary: {
+                        VStack {
+                            Text(middleText)
+                            Spacer()
+                        }
+                        .padding(8)
+                        .split(
+                            layout,
+                            fraction: 0.8,
+                            hide: rightHide,
+                            config: rightConfig,
+                            splitter: { Splitter.line(layout) },
+                            secondary: {
+                                VStack {
+                                    Text(rightText)
+                                    Spacer()
+                                }
+                                .padding(8)
+                            }
+                        )
+                    }
+                )
+                .border(.black)
+                .padding([.leading, .trailing], 8)
             }
             Text(demo.description)
                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))

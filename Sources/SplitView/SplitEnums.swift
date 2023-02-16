@@ -9,8 +9,8 @@ import Foundation
 
 /// The orientation of the `primary` and `secondary` views (e.g., Vertical = VStack, Horizontal = HStack)
 public enum SplitLayout: String, CaseIterable {
-    case Horizontal
-    case Vertical
+    case horizontal
+    case vertical
 }
 
 /// The two sides of a SplitView.
@@ -19,6 +19,9 @@ public enum SplitLayout: String, CaseIterable {
 /// For `SplitLayout.Vertical`, `Primary` is top, `Secondary` is bottom.
 /// Used to identify the side (if any) which is hidden.
 public enum SplitSide: String {
-    case Primary
-    case Secondary
+    case primary
+    case secondary
+    
+    var isPrimary: Bool { self == .primary }
+    var isSecondary: Bool { self == .secondary }
 }

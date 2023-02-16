@@ -71,13 +71,9 @@ struct AdjustHideButton: View {
             },
             label: {
                 if hide.side == nil {
-                    Image(systemName: "square")
+                    Image(systemName: "rectangle.righthalf.inset.filled.arrow.right")
                 } else {
-                    if layout.isHorizontal {
-                        Image(systemName: "square.split.2x1")
-                    } else {
-                        Image(systemName: "square.split.1x2")
-                    }
+                    Image(systemName: "rectangle.lefthalf.inset.filled.arrow.left")
                 }
             }
         )
@@ -98,7 +94,7 @@ struct AdjustLayoutButton: View {
                 }
             },
             label: {
-                layout.isHorizontal ? Image(systemName: "square.split.1x2") : Image(systemName: "square.split.2x1")
+                layout.isHorizontal ? Image(systemName: "rectangle.split.1x2") : Image(systemName: "rectangle.split.2x1")
             }
         )
         .disabled(hide.side != nil)

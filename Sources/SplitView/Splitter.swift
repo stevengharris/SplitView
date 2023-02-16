@@ -21,17 +21,20 @@ public struct Splitter: SplitDivider {
     public var visibleThickness: CGFloat { config.visibleThickness }
     private var invisibleThickness: CGFloat { config.invisibleThickness }
     
+    // Defaults
     public static var defaultColor: Color = Color.gray
     public static var defaultInset: CGFloat = 6
     public static var defaultVisibleThickness: CGFloat = 4
     public static var defaultInvisibleThickness: CGFloat = 30
-    public static var horizontal: Splitter = Splitter(.Horizontal)
-    public static var vertical: Splitter = Splitter(.Vertical)
+    
+    // Default .horizontal and .vertical Splitters
+    public static var horizontal: Splitter = Splitter(.horizontal)
+    public static var vertical: Splitter = Splitter(.vertical)
     
     public var body: some View {
-        ZStack(alignment: .center) {
+        ZStack {
             switch layout.value {
-            case .Horizontal:
+            case .horizontal:
                 Color.clear
                     .frame(width: invisibleThickness)
                     .padding(0)
@@ -39,7 +42,7 @@ public struct Splitter: SplitDivider {
                     .fill(color)
                     .frame(width: visibleThickness)
                     .padding(EdgeInsets(top: inset, leading: 0, bottom: inset, trailing: 0))
-            case .Vertical:
+            case .vertical:
                 Color.clear
                     .frame(height: invisibleThickness)
                     .padding(0)

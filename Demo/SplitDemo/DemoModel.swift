@@ -15,6 +15,7 @@ enum DemoID: String, CaseIterable {
     case nestedAdjustable
     case invisibleSplitter
     case customSplitter
+    case sidebars
 }
 
 /// Globally accessible dictionary of Demos.
@@ -43,8 +44,8 @@ let demos: [DemoID : Demo] = [
             description: "Nested adjustable split views with the default Splitter",
             holders: [
                 SplitStateHolder(layout: LayoutHolder(), hide: SideHolder()),
-                SplitStateHolder(layout: LayoutHolder(.Vertical), hide: SideHolder()),
-                SplitStateHolder(layout: LayoutHolder(.Horizontal), hide: SideHolder()),
+                SplitStateHolder(layout: LayoutHolder(.vertical), hide: SideHolder()),
+                SplitStateHolder(layout: LayoutHolder(.horizontal), hide: SideHolder()),
             ]
         ),
     .invisibleSplitter:
@@ -57,8 +58,15 @@ let demos: [DemoID : Demo] = [
         Demo(
             label: "Custom splitter",
             description: "Custom splitter that adjusts to layout/hide.",
-            holders: [SplitStateHolder(layout: LayoutHolder(.Horizontal), hide: SideHolder())]
+            holders: [SplitStateHolder(layout: LayoutHolder(.horizontal), hide: SideHolder())]
         ),
+    .sidebars:
+        Demo(
+            label: "Sidebars",
+            description: "Opposing sidebar maintains its size as either is resized.",
+            holders: [SplitStateHolder(layout: LayoutHolder(.horizontal), hide: SideHolder())]
+        ),
+    
 ]
 
 /// Demo holds onto the labels for the Menu and descriptions for the Text at the bottom, along with

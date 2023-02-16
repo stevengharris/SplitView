@@ -65,7 +65,7 @@ struct DemoSplitter: SplitDivider {
 
 struct DemoSplitter_Previews: PreviewProvider {
     static var previews: some View {
-        DemoSplitter(layout: LayoutHolder(.Horizontal), hide: SideHolder())
-        DemoSplitter(layout: LayoutHolder(.Vertical), hide: SideHolder())
+        DemoSplitter(layout: LayoutHolder(.horizontal), hide: SideHolder())
+        DemoSplitter(layout: LayoutHolder(.vertical), hide: SideHolder())
     }
 }

@@ -17,6 +17,10 @@ or vertical (above-and-below) `layout` separated by a draggable `splitter` for r
 * Specify the `fraction` of full width/height for the initial position of the splitter.
 * Programmatically `hide` either view and change their `layout`.
 * Arbitrarily nest split views.
+* Constrain the splitter movement by specifying minimum fractions of the full width/height
+for either or both views.
+* Prioritize either of one the views to maintain its width/height as the containing 
+view changes size.
 * Easily save the state of `fraction`, `layout`, and `hide` so a split view opens 
 in its last state between application restarts.
 * Use your own custom `splitter` or the default Splitter.
@@ -26,9 +30,10 @@ resizing.
 ## Motivation
 
 NavigationSplitView is fine for a sidebar and for applications that conform to a 
-nice master-detail type of model. On the other hand sometimes you just need two 
+nice master-detail type of model. On the other hand, sometimes you just need two 
 views to sit side-by-side or above-and-below each other and to adjust the split 
-between them. That is what the `split` modifier does for you.
+between them. You also might want to compose split views in ways that make sense 
+in your own application context. That is what the `split` modifier does for you.
 
 ## Demo
 
@@ -41,38 +46,38 @@ This demo is available in the Demo directory as SplitDemo.xcodeproj.
 Install the package.
 
 Everything is done using a single view modifier: `split`. The `split` modifier 
-always requires a `layout`, either `.Horizontal` or `.Vertical`. 
+always requires a `layout`, either `.horizontal` or `.vertical`. 
 
 **Note:** You *can* use the SplitView View directly, but in addition to information 
-about layout, it requires three types of content to be passed-in as ViewBuilders, and 
-the `split` modifier makes all of that much simpler.
+about layout and configuration, it requires three types of content to be passed-in as 
+ViewBuilders. The `split` modifier makes all of that much simpler.
 
 In its simplest form, the `split` modifier looks like this:
 
 ```
-Color.red.split(.Horizontal) { Color.green }
+Color.red.split(.horizontal) { Color.green }
 ```
 
 This will produce a horizontal split view, with red on the left and green on the right, 
 with a default splitter between them that can be dragged to change their sizes. 
-The view being modified - Color.red - is the `Primary` side, and the one it is split with - 
-Color.green - is the `Secondary` side.
+The view being modified - `Color.red` - is the `primary` side, and the one it is split with - 
+`Color.green` - is the `secondary` side.
 
 If you want to set the layout to be vertical and the initial position of the splitter, you 
 can do this:
 
 ```
-Color.red.split(.Vertical, fraction: 0.25) { Color.green }
+Color.red.split(.vertical, fraction: 0.25) { Color.green }
 ```
 
-Now you get a red view above the green view, with the `Primary` side (red) occupying 
+Now you get a red view above the green view, with the `primary` side (red) occupying 
 1/4 of the window.
 
 Often you want to hide/show one of the views you split. You can do this by specifying 
 the side to hide:
 
 ```
-Color.red.split(.Horizontal, fraction: 0.25, hide: .Secondary) { Color.green }
+Color.red.split(.horizontal, fraction: 0.25, hide: .secondary) { Color.green }
 ```
 
 The right (green) side will be hidden, but you can pull it open using the splitter that will 
@@ -83,7 +88,7 @@ comes with a FractionHolder and LayoutHolder. Under the covers, the SplitView th
 from the `split` modifier observes all of these holders and redraws itself if they change. 
 
 Here is an example showing how to use the SideHolder with a Button to hide/show the 
-Secondary (green) side:
+secondary (green) side:
 
 ```
 struct ContentView: View {
@@ -92,30 +97,30 @@ struct ContentView: View {
         VStack(spacing: 0) {
             Button("Toggle Hide") {
                 withAnimation {
-                    hide.toggle()   // Toggle between hiding nothing and hiding Secondary
+                    hide.toggle()   // Toggle between hiding nothing and hiding secondary
                 }
             }
-            Color.red.split(.Horizontal, hide: hide) { Color.green }
+            Color.red.split(.horizontal, hide: hide) { Color.green }
         }
     }
 }
 ```
 
-Note that the `split` modifier accepts `hide` passed as a SplitSide - `.Secondary` or `.Primary` -
-or as a SideHolder. Similarly, `layout` can be passed as a SplitLayout - `.Horizontal` or `.Vertical` - 
+Note that the `split` modifier accepts `hide` passed as a SplitSide - `.secondary` or `.primary` -
+or as a SideHolder. Similarly, `layout` can be passed as a SplitLayout - `.horizontal` or `.vertical` - 
 or as a LayoutHolder. And `fraction` can be passed as a CGFloat or as a FractionHolder.
 
 ### Nesting Split Views
 
-The Primary and/or Secondary views can be SplitViews that result from the `split` modifier.
+The primary and/or secondary views can be SplitViews that result from the `split` modifier.
 For example:
 
 ```
 struct ContentView: View {
     var body: some View {
-        Color.red.split(.Horizontal) {
-            Color.green.split(.Vertical) {
-                Color.blue.split(.Horizontal) {
+        Color.red.split(.horizontal) {
+            Color.green.split(.vertical) {
+                Color.blue.split(.horizontal) {
                     Color.yellow
                 }
             }
@@ -130,11 +135,13 @@ or:
 struct ContentView: View {
     var body: some View {
         Color.red
-            .split(.Horizontal) { Color.green }
-            .split(.Vertical) { Color.blue }
+            .split(.horizontal) { Color.green }
+            .split(.vertical) { Color.blue }
     }
 }
 ```
+
+A caution on the latter style... If you split a split using the same layout (i.e., both `.horizontal` or both `.vertical`) and then modify the trailing one using a HideHolder or LayoutHolder, the entire view body will be regenerated. This can result in some jagged animation.
 
 ### Using UserDefaults for Split State
 
@@ -148,7 +155,7 @@ in UserDefaults.standard.
 ```
 struct ContentView: View {
     let fraction = FractionHolder.usingUserDefaults(0.5, key: "myFraction")
-    let layout = LayoutHolder.usingUserDefaults(.Horizontal, key: "myLayout")
+    let layout = LayoutHolder.usingUserDefaults(.horizontal, key: "myLayout")
     let hide = SideHolder.usingUserDefaults(key: "mySide")
     var body: some View {
         VStack(spacing: 0) {
@@ -176,12 +183,12 @@ when you open the app again, it will open where you left it.
 
 ### Modifying and Constraining the Default Splitter 
 
-You can change the way the default Splitter displays using SplitConfig and passing it 
+You can change the way the default Splitter displays using SplitConfig. Pass the SplitConfig 
 to the `split` modifier. For example, you can change the color, inset, and thickness:
 
 ```
 let config = SplitConfig(color: Color.cyan, inset: 4, visibleThickness: 8)
-Color.red.split(.Vertical, fraction: 0.25, config: config) { Color.green }
+Color.red.split(.vertical, fraction: 0.25, config: config) { Color.green }
 ```
 
 By default, the splitter can be dragged across the full width/height of the split 
@@ -192,19 +199,19 @@ within those constraints. You can do this by specifying `minPFraction` and/or
 
 ```
 let config = SplitConfig(color: Color.cyan, minPFraction: 0.2, minSFraction: 0.2)
-Color.red.split(.Vertical, fraction: 0.25, config: config) { Color.green }
+Color.red.split(.vertical, fraction: 0.25, config: config) { Color.green }
 ```
 
 One thing to note is that if you specify `minPFraction` or `minSFraction`, then when 
 you hide a side that has its minimum fraction specified, you won't be able to drag 
-it out from its hidden state. You can unhide it, though. Why? Because it doesn't
-make sense to be able to drag from the hidden side when you never could have dragged 
-it to that location to begin with because of the fraction constraint. As soon as you 
-tried to drag it, the slider would snap to an allowed position, which is also jarring 
-to users. To make sure there is no visual confusion about whether a splitter can be 
-dragged, the splitter will not shown at all when it is not draggable. Again: a 
-splitter will only be non-draggable when a side is hidden and the corresponding 
-`minPFraction` or `minSFraction` is specified.
+it out from its hidden state. Why? Because it doesn't make sense to be able to drag 
+from the hidden side when you never could have dragged it to that location to begin 
+with because of the fraction constraint. As soon as you tried to drag it, the slider 
+would snap to an allowed position, which is also jarring to users. To make sure 
+there is no visual confusion about whether a splitter can be dragged, the splitter 
+will not shown at all when it is not draggable. Again: a splitter will only be 
+non-draggable when a side is hidden and the corresponding `minPFraction` or 
+`minSFraction` is specified.
 
 ### Custom Splitters
 
@@ -212,7 +219,7 @@ By default the `split` modifier produces a SplitView that uses the default Split
 create your own and use it, though. Your custom splitter has to conform to SplitDivider 
 protocol, which makes sure your custom splitter can let the SplitView know what its 
 `visibleThickness` is. The `visibleThickness` is the size your custom splitter displays 
-itself in, and it also defines the `spacing` between the Primary and Secondary views inside 
+itself in, and it also defines the `spacing` between the `primary` and `secondary` views inside 
 of SplitView.
 
 The SplitView detects drag events occurring in the splitter. For this reason, you might want 
@@ -285,36 +292,71 @@ struct ContentView: View {
 }
 ```
 
+If you make a custom splitter that would be generally useful to people, *please* file 
+a pull request and include an additional Splitter extension in Splitter+Extensions.swift. 
+The `line` Splitter is included in the file as an example that is used in the "Sidebars" 
+demo. Similarly, the `invisible` Splitter re-uses the `line` splitter by passing a 
+`visibleThickness` of zero and is used in the "Invisible splitter" demo.
+
 ### Invisible Splitters
 
 You might want the views you split to be adjustable using the splitter, but for the splitter 
 itself to be invisible. For example, a "normal" sidebar doesn't show a splitter between it 
-and the detail view it sits next to. You can do this using the standard Splitter with 
-`visibleThickness` set to zero, and passing that as the custom splitter.
+and the detail view it sits next to. You can do this passing `Splitter.invisible()` as the 
+custom splitter.
 
 One thing to watch out for with an invisible splitter is that when a side is hidden, there 
 is no visual indication that it can be dragged back out. To prevent this issue, you should 
-specify `minPFraction` and `midSFraction` when setting `visibleThickness` to zero.
+specify `minPFraction` and `midSFraction` when using `Splitter.invisible()`.
 
 ```
 struct ContentView: View {
     let hide = SideHolder()
-    let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.2, visibleThickness: 0)
+    let config = SplitConfig(minPFraction: 0.2, minSFraction: 0.2)
     var body: some View {
         VStack(spacing: 0) {
             Button("Toggle Hide") {
                 withAnimation {
-                    hide.toggle()   // Toggle between hiding nothing and hiding Secondary
+                    hide.toggle()   // Toggle between hiding nothing and hiding secondary
                 }
             }
             Color.red
                 .split(
-                    .Horizontal,
+                    .horizontal,
                     hide: hide,
                     config: config,
-                    splitter: { Splitter(.Horizontal, config: config) },
+                    splitter: { Splitter.invisible(.horizontal) },
                     secondary: { Color.green }
                 )
+        }
+    }
+}
+```
+
+### Prioritizing The Size Of A Side
+
+When you have a `.horizontal` layout in a sidebar type of arrangement of split views, 
+you often want the sidebar to maintain its width as you resize the overall view. 
+You might have the same need for a `.vertical` layout also. If you have two sidebars, 
+you may want to slide either one while the opposing one stays the same width. You 
+can accomplish this by specifying a `priority` side (either `.primary` or `.secondary`)
+in the SplitConfig.
+
+Here is an example that has a red left sidebar and green right sidebar surrounding a 
+yellow middle view. As you slide either splitter, the other stays fixed. Under the covers, 
+the SplitView is adjusting the proportion between `primary` and `secondary` to keep the 
+splitter in the same place. You will also see that as you resize the window, both 
+sidebars maintain their width.
+
+```
+struct ContentView: View {
+    var body: some View {
+        let leftConfig = SplitConfig(priority: .primary)
+        let rightConfig = SplitConfig(priority: .secondary)
+        Color.red.split(.horizontal, fraction: 0.2, config: leftConfig) {
+            Color.yellow.split(.horizontal, fraction: 0.75, config: rightConfig) {
+                Color.green
+            }
         }
     }
 }
@@ -336,12 +378,17 @@ annoying log message that is beyond the control of anyone but Apple.
 
 ## Possible Enhancements
 
-I might add a few things but would be very happy to accept pull requests! For example:
-
-* A splitter that adapted to device orientation and form factors somewhat like 
-NavigationSplitView does.
+I might add a few things but would be very happy to accept pull requests! For example,
+a split view that adapted to device orientation and form factors somewhat like 
+NavigationSplitView would be useful.
 
 ## History
+
+### Version 2.0
+
+* Incompatible change from Version 1 in split enums. SplitLayout cases change from `.Horizontal` and `.Vertical` to `.horizontal` and `.vertical`. SplitSide cases change from `.Primary` and `.Secondary` to `.primary` and `.secondary`.
+* Add ability to specify a side (`.primary` or `.secondary`) that has sizing `priority`. The size of the `priority` side remains unchanged as its containing view resizes. If `priority` is not specified - the default - then the proportion between `primary` and `secondary` is maintained. This enables proper sidebar type of behavior, where changing one sidebar's size does not affect the other.
+* Add a sidebar demo showing the use of `priority`.
 
 ### Version 1.1
 

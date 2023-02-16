@@ -143,6 +143,18 @@ extension View {
     public func split(_ layout: SplitLayout, fraction: CGFloat, config: SplitConfig? = nil, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(LayoutHolder(layout), fraction: FractionHolder(fraction), hide: SideHolder(), config: config ?? SplitConfig(), splitter: splitter, secondary: secondary))
     }
+    
+    //MARK: Using CGFloat and SideHolder
+    
+    /// Both `fraction` and `hide` specified, default Splitter.
+    public func split(_ layout: SplitLayout, fraction: CGFloat, hide: SideHolder, config: SplitConfig? = nil, @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+        modifier(Split(LayoutHolder(layout), fraction: FractionHolder(fraction), hide: hide, config: config ?? SplitConfig(), splitter: { Splitter(layout, config: config ?? SplitConfig()) }, secondary: secondary))
+    }
+    
+    /// Both `fraction` and `hide` specified, custom `splitter`.
+    public func split(_ layout: SplitLayout, fraction: CGFloat, hide: SideHolder, config: SplitConfig? = nil, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+        modifier(Split(LayoutHolder(layout), fraction: FractionHolder(fraction), hide: hide, config: config ?? SplitConfig(), splitter: splitter, secondary: secondary))
+    }
 
 }
 
@@ -251,5 +263,18 @@ extension View {
     public func split(_ layout: LayoutHolder, fraction: CGFloat, config: SplitConfig? = nil, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
         modifier(Split(layout, fraction: FractionHolder(fraction), hide: SideHolder(), config: config ?? SplitConfig(), splitter: splitter, secondary: secondary))
     }
+    
+    //MARK: Using CGFloat and SideHolder
+    
+    /// Both `fraction` and `hide` specified, default Splitter.
+    public func split(_ layout: LayoutHolder, fraction: CGFloat, hide: SideHolder, config: SplitConfig? = nil, @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+        modifier(Split(layout, fraction: FractionHolder(fraction), hide: hide, config: config ?? SplitConfig(), splitter: { Splitter(layout, config: config ?? SplitConfig()) }, secondary: secondary))
+    }
+    
+    /// Both `fraction` and `hide` specified, custom `splitter`.
+    public func split(_ layout: LayoutHolder, fraction: CGFloat, hide: SideHolder, config: SplitConfig? = nil, @ViewBuilder splitter: @escaping (()->some SplitDivider), @ViewBuilder secondary: @escaping (()->some View)) -> some View {
+        modifier(Split(layout, fraction: FractionHolder(fraction), hide: hide, config: config ?? SplitConfig(), splitter: splitter, secondary: secondary))
+    }
+    
 
 }

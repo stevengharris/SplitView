@@ -22,9 +22,9 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     @ObservedObject private var fraction: FractionHolder
     /// Use to hide/show `secondary` independent of dragging. When value is `false`, will restore to `privateFraction`.
     @ObservedObject private var hide: SideHolder
-    /// The `primary` View, left when `layout==.Horizontal`, top when `layout==.Vertical`.
+    /// The `primary` View, left when `layout==.horizontal`, top when `layout==.vertical`.
     private let primary: P
-    /// The `secondary` View, right when `layout==.Horizontal`, bottom when `layout==.Vertical`.
+    /// The `secondary` View, right when `layout==.horizontal`, bottom when `layout==.vertical`.
     private let secondary: S
     /// The `splitter` View that sits between `primary` and `secondary`.
     /// When set up using ViewModifiers, by default either `Splitter.horizontal` or `Splitter.vertical`.
@@ -33,6 +33,8 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     private let hasInitialFraction: Bool
     /// The key state that changes the split between `primary` and `secondary`
     @State private var privateFraction: CGFloat
+    /// The previous size, used to determine how to change `privateFraction` as size changes
+    @State private var oldSize: CGSize = CGSize.zero
     /// Spacing is zero when the splitter isn't showing; i.e., when it is not draggable.
     private var spacing: CGFloat { isDraggable() ? splitter.visibleThickness : 0 }
     let minPFraction: CGFloat?
@@ -44,11 +46,11 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
             let size = geometry.size
             let width = size.width
             let height = size.height
-            let minPLength = horizontal ? width * (minPFraction ?? 0) : height * (minPFraction ?? 0)
-            let minSLength = horizontal ? width * (minSFraction ?? 0) : height * (minSFraction ?? 0)
+            let breadth = horizontal ? height : width
+            let minPLength = breadth * (minPFraction ?? 0)
+            let minSLength = breadth * (minSFraction ?? 0)
             let pLength = max(minPLength, pLength(in: size))
             let sLength = max(minSLength, sLength(in: size))
-            let breadth = horizontal ? size.height : width
             let pWidth = max(minPLength, horizontal ? min(width - spacing, pLength - spacing / 2) : breadth)
             let pHeight = max(minPLength, horizontal ? breadth : min(height - spacing, pLength - spacing / 2))
             let sWidth = max(minSLength, horizontal ? sLength - spacing / 2 : breadth)
@@ -67,6 +69,15 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
                         .position(center)
                         .gesture(drag(in: size))
                 }
+            }
+            // Our size changes when the window size changes or the containing window's size changes.
+            // We have to monitor this change when we have nested SplitViews or the nested ones don't properly adjust.
+            .onChange(of: geometry.size) { size in
+                setPrivateFraction(in: size)
+            }
+            // We need to get the last size set after we appear, so the initial sizing doesn't start from zero
+            .onAppear {
+                oldSize = geometry.size
             }
             .clipped()  // Can cause problems in some List styles if not clipped
             .environmentObject(layout)
@@ -91,9 +102,27 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
         self.init(LayoutHolder(layout), fraction: fraction, hide: hide, config: config, primary: primary, splitter: splitter, secondary: secondary)
     }
     
+    /// Set the privateFraction to maintain the size of the priority side when size changes.
+    private func setPrivateFraction(in size: CGSize) {
+        guard let side = config.priority else { return }
+        let horizontal = layout.isHorizontal
+        let newLength = horizontal ? size.width : size.height
+        let oldLength = horizontal ? oldSize.width : oldSize.height
+        let delta = newLength - oldLength
+        if delta == 0 { return }
+        let oldPLength = privateFraction * oldLength
+        let newPLength = side.isPrimary ? oldPLength : max(0, oldPLength + delta)
+        let newPrivateFraction = newPLength / newLength
+        privateFraction = newPrivateFraction
+        updateFraction(to: privateFraction)
+        oldSize = size
+    }
+    
     /// The Gesture recognized by the `splitter`
     ///
     /// The main function of dragging is to modify the `privateFraction`, which is always between 0 and 1.
+    /// The `privateFraction` accounts for the `visibleThickness` because for nested SplitViews
+    /// with aligned layouts, the size for the nested view causes layout issues at the extremes of the containing view.
     ///
     /// Whenever we drag, we also set `hide.value` to `nil`. This is because the `pLength` and
     /// `sLength` key off of `hide` to return the full width/height when its value is non-nil.
@@ -101,21 +130,24 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     /// When we are done dragging, we `updateFraction`, which does nothing unless there was
     /// a `FractionHolder` passed-in at `init` time as held in `hasInitialFraction`.
     private func drag(in size: CGSize) -> some Gesture {
+        let splitterInset = config.visibleThickness / 2
         switch layout.value {
-        case .Horizontal:
+        case .horizontal:
             return DragGesture()
                 .onChanged { gesture in
+                    let x = max(splitterInset, min(size.width - splitterInset, gesture.location.x))
                     hide.side = nil    // Otherwise will not be draggable if hidden
-                    privateFraction = min(1 - (minSFraction ?? 0), max(minPFraction ?? 0, gesture.location.x / size.width))
+                    privateFraction = min(1 - (minSFraction ?? 0), max(minPFraction ?? 0, x / size.width))
                 }
                 .onEnded { gesture in
                     updateFraction(to: privateFraction)
                 }
-        case .Vertical:
+        case .vertical:
             return DragGesture()
                 .onChanged { gesture in
+                    let y = max(splitterInset, min(size.height - splitterInset, gesture.location.y))
                     hide.side = nil    // Otherwise will not be draggable if hidden
-                    privateFraction = min(1 - (minSFraction ?? 0), max(minPFraction ?? 0, gesture.location.y / size.height))
+                    privateFraction = min(1 - (minSFraction ?? 0), max(minPFraction ?? 0, y / size.height))
                 }
                 .onEnded { gesture in
                     updateFraction(to: privateFraction)
@@ -135,12 +167,12 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     /// to be dragged-out when there is no visible indication it is hidden.
     private func isDraggable() -> Bool {
         guard hide.side != nil || minPFraction != nil || minSFraction != nil else { return true }
-        if hide.side == .Secondary {
-            return minSFraction == nil
-        } else if hide.side == .Primary {
+        guard let side = hide.side else { return true }
+        switch side {
+        case .primary:
             return minPFraction == nil
-        } else {
-            return true
+        case .secondary:
+            return minSFraction == nil
         }
     }
     
@@ -156,7 +188,7 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
         guard let side = hide.side else {
             return length * privateFraction
         }
-        return side == .Secondary ? length : 0
+        return side.isSecondary ? length : 0
     }
     
     /// The length of secondary in the layout direction, without regard to any inset for the Splitter
@@ -165,23 +197,23 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
         guard let side = hide.side else {
             return length - pLength(in: size)
         }
-        return side == .Primary ? length : 0
+        return side.isPrimary ? length : 0
     }
     
 }
 
 struct SplitView_Previews: PreviewProvider {
     static var previews: some View {
-        SplitView(.Horizontal,
+        SplitView(.horizontal,
             fraction: FractionHolder(0.75),
             primary: { Color.red },
             splitter: { Splitter.horizontal },
             secondary: {
-                SplitView(.Vertical,
+                SplitView(.vertical,
                     primary: { Color.blue },
                     splitter: { Splitter.vertical },
                     secondary: {
-                        SplitView(.Vertical,
+                        SplitView(.vertical,
                             primary: { Color.green },
                             splitter: { Splitter.vertical },
                             secondary: { Color.yellow }
@@ -191,10 +223,10 @@ struct SplitView_Previews: PreviewProvider {
             }
         )
         .frame(width: 400, height: 400)
-        SplitView(.Horizontal,
-            primary: { SplitView(.Vertical, primary: { Color.red }, splitter: { Splitter.vertical }, secondary: { Color.green }) },
+        SplitView(.horizontal,
+            primary: { SplitView(.vertical, primary: { Color.red }, splitter: { Splitter.vertical }, secondary: { Color.green }) },
             splitter: { Splitter.horizontal },
-            secondary: { SplitView(.Horizontal, primary: { Color.blue }, splitter: { Splitter.horizontal }, secondary: { Color.yellow }) }
+            secondary: { SplitView(.horizontal, primary: { Color.blue }, splitter: { Splitter.horizontal }, secondary: { Color.yellow }) }
         )
         .frame(width: 400, height: 400)
     }

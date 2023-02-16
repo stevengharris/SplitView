@@ -19,10 +19,10 @@ public class LayoutHolder: ObservableObject {
     public var getter: (()->SplitLayout)?
     public var setter: ((SplitLayout)->Void)?
     
-    public var isHorizontal: Bool { value == .Horizontal }
+    public var isHorizontal: Bool { value == .horizontal }
     
     public init(_ layout: SplitLayout? = nil, getter: (()->SplitLayout)? = nil, setter: ((SplitLayout)->Void)? = nil) {
-        value = getter?() ?? layout ?? .Horizontal
+        value = getter?() ?? layout ?? .horizontal
         self.getter = getter
         self.setter = setter
     }
@@ -35,7 +35,7 @@ public class LayoutHolder: ObservableObject {
                     let value = UserDefaults.standard.value(forKey: key) as? String,
                     let layout = SplitLayout(rawValue: value)
                 else {
-                    return .Horizontal
+                    return .horizontal
                 }
                 return layout
             },
@@ -46,7 +46,7 @@ public class LayoutHolder: ObservableObject {
     }
     
     public func toggle() {
-        value = value == .Horizontal ? .Vertical : .Horizontal
+        value = value == .horizontal ? .vertical : .horizontal
     }
 
 }
@@ -94,6 +94,7 @@ public class SideHolder: ObservableObject {
         get { value }
         set { setValue(newValue) }
     }
+    public var oldSide: SplitSide? { oldValue }
     private var oldValue: SplitSide?
     
     public init(_ hide: SplitSide? = nil, getter: (()->SplitSide?)? = nil, setter: ((SplitSide?)->Void)? = nil) {
@@ -101,7 +102,7 @@ public class SideHolder: ObservableObject {
         self.value = value
         self.getter = getter
         self.setter = setter
-        oldValue = value == nil ? .Secondary : nil
+        oldValue = value == nil ? .secondary : nil
     }
     
     public func hide(_ side: SplitSide) {
