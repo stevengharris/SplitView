@@ -37,7 +37,7 @@ in your own application context. That is what the `split` modifier does for you.
 
 ## Demo
 
-![SplitView](https://user-images.githubusercontent.com/1020361/219515082-6e657bee-e4e2-4efd-9e78-f5c98aaa3083.movv)
+![SplitView](https://user-images.githubusercontent.com/1020361/219515082-6e657bee-e4e2-4efd-9e78-f5c98aaa3083.mov)
 
 This demo is available in the Demo directory as SplitDemo.xcodeproj. 
 
