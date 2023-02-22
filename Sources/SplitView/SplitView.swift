@@ -105,6 +105,11 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     /// Set the privateFraction to maintain the size of the priority side when size changes.
     private func setPrivateFraction(in size: CGSize) {
         guard let side = config.priority else { return }
+        // Sometimes oldSize can be set to CGSize.zero even in onAppear; if so, set it once here
+        guard oldSize != CGSize.zero else {
+            oldSize = size
+            return
+        }
         let horizontal = layout.isHorizontal
         let newLength = horizontal ? size.width : size.height
         let oldLength = horizontal ? oldSize.width : oldSize.height
