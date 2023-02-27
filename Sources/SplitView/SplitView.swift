@@ -34,9 +34,12 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     /// The key state that changes the split between `primary` and `secondary`
     @State private var privateFraction: CGFloat
     /// The previous size, used to determine how to change `privateFraction` as size changes
-    @State private var oldSize: CGSize = CGSize.zero
+    @State private var oldSize: CGSize?
+    /// The previous position as we drag the `splitter`
+    @State private var previousPosition: CGFloat?
     /// Spacing is zero when the splitter isn't showing; i.e., when it is not draggable.
     private var spacing: CGFloat { isDraggable() ? splitter.visibleThickness : 0 }
+    private var halfSpacing: CGFloat { splitter.visibleThickness / 2 }
     let minPFraction: CGFloat?
     let minSFraction: CGFloat?
     
@@ -46,17 +49,18 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
             let size = geometry.size
             let width = size.width
             let height = size.height
+            let length = horizontal ? width : height
             let breadth = horizontal ? height : width
-            let minPLength = breadth * (minPFraction ?? 0)
-            let minSLength = breadth * (minSFraction ?? 0)
+            let minPLength = length * (minPFraction ?? 0)
+            let minSLength = length * (minSFraction ?? 0)
             let pLength = max(minPLength, pLength(in: size))
             let sLength = max(minSLength, sLength(in: size))
-            let pWidth = max(minPLength, horizontal ? min(width - spacing, pLength - spacing / 2) : breadth)
-            let pHeight = max(minPLength, horizontal ? breadth : min(height - spacing, pLength - spacing / 2))
-            let sWidth = max(minSLength, horizontal ? sLength - spacing / 2 : breadth)
-            let sHeight = max(minSLength, horizontal ? breadth : min(height - spacing, sLength - spacing / 2))
+            let pWidth = horizontal ? max(minPLength, min(width - spacing, pLength - spacing / 2)) : breadth
+            let pHeight = horizontal ? breadth : max(minPLength, min(height - spacing, pLength - spacing / 2))
+            let sWidth = horizontal ? max(minSLength, min(width - pLength, sLength - spacing / 2)) : breadth
+            let sHeight = horizontal ? breadth : max(minSLength, min(height - pLength, sLength - spacing / 2))
             let sOffset = horizontal ? CGSize(width: pWidth + spacing, height: 0) : CGSize(width: 0, height: pHeight + spacing)
-            let center = horizontal ? CGPoint(x: pWidth + spacing / 2, y: height / 2) : CGPoint(x: width / 2, y: pHeight + spacing / 2)
+            let dCenter = horizontal ? CGPoint(x: pWidth + spacing / 2, y: height / 2) : CGPoint(x: width / 2, y: pHeight + spacing / 2)
             ZStack(alignment: .topLeading) {
                 primary
                     .frame(width: pWidth, height: pHeight)
@@ -66,18 +70,17 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
                 // Only show the splitter if it is draggable. See isDraggable comments.
                 if isDraggable() {
                     splitter
-                        .position(center)
+                        .position(dCenter)
                         .gesture(drag(in: size))
                 }
             }
             // Our size changes when the window size changes or the containing window's size changes.
-            // We have to monitor this change when we have nested SplitViews or the nested ones don't properly adjust.
-            .onChange(of: geometry.size) { size in
-                setPrivateFraction(in: size)
-            }
-            // We need to get the last size set after we appear, so the initial sizing doesn't start from zero
-            .onAppear {
-                oldSize = geometry.size
+            // Note our size doesn't change when dragging the splitter, but when we have nested split
+            // views, dragging our splitter can cause the size of another split view to change.
+            // Use task instead of both onChange and onAppear because task will only executed when
+            // geometry.size changes. Sometimes onAppear starts with CGSize.zero, which causes issues.
+            .task(id: geometry.size) {
+                setPrivateFraction(in: geometry.size)
             }
             .clipped()  // Can cause problems in some List styles if not clipped
             .environmentObject(layout)
@@ -102,32 +105,36 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
         self.init(LayoutHolder(layout), fraction: fraction, hide: hide, config: config, primary: primary, splitter: splitter, secondary: secondary)
     }
     
-    /// Set the privateFraction to maintain the size of the priority side when size changes.
+    /// Set the privateFraction to maintain the size of the priority side when size changes, as called from task(id:) modifier.
     private func setPrivateFraction(in size: CGSize) {
         guard let side = config.priority else { return }
-        // Sometimes oldSize can be set to CGSize.zero even in onAppear; if so, set it once here
-        guard oldSize != CGSize.zero else {
+        guard let oldSize else {
+            // We need to know the oldSize to be able to adjust privateFraction in a way
+            // that maintains a fixed width/height for the priority side.
             oldSize = size
             return
         }
         let horizontal = layout.isHorizontal
-        let newLength = horizontal ? size.width : size.height
         let oldLength = horizontal ? oldSize.width : oldSize.height
+        let newLength = horizontal ? size.width : size.height
         let delta = newLength - oldLength
+        self.oldSize = size     // Retain even if delta might be zero because layout might change
         if delta == 0 { return }
         let oldPLength = privateFraction * oldLength
-        let newPLength = side.isPrimary ? oldPLength : max(0, oldPLength + delta)
-        let newPrivateFraction = newPLength / newLength
-        privateFraction = newPrivateFraction
+        // If holding the primary side constant, the pLength doesn't change
+        let newPLength = side.isPrimary ? oldPLength : oldPLength + delta
+        let newFraction = newPLength / newLength
+        // Always keep the privateFraction within bounds of minimums if specified
+        privateFraction = min(1 - (minSFraction ?? 0), max((minPFraction ?? 0), newFraction))
         updateFraction(to: privateFraction)
-        oldSize = size
     }
     
-    /// The Gesture recognized by the `splitter`
+    /// The Gesture recognized by the `splitter`.
     ///
-    /// The main function of dragging is to modify the `privateFraction`, which is always between 0 and 1.
-    /// The `privateFraction` accounts for the `visibleThickness` because for nested SplitViews
-    /// with aligned layouts, the size for the nested view causes layout issues at the extremes of the containing view.
+    /// The main function of dragging is to modify the `privateFraction`, which is always between 0 and 1 but
+    /// doesn't exceed the bounds of the `visibleThickness` (or `minPFraction`/`minSFraction` if specified).
+    /// In other words, while `privateFraction` can be 0 or 1 when `visibleThickess` is zero, it's almost always
+    /// between those values because the `splitter` is visible and/or the minimum fractions were specified.
     ///
     /// Whenever we drag, we also set `hide.value` to `nil`. This is because the `pLength` and
     /// `sLength` key off of `hide` to return the full width/height when its value is non-nil.
@@ -135,29 +142,36 @@ public struct SplitView<P: View, D: SplitDivider, S: View>: View {
     /// When we are done dragging, we `updateFraction`, which does nothing unless there was
     /// a `FractionHolder` passed-in at `init` time as held in `hasInitialFraction`.
     private func drag(in size: CGSize) -> some Gesture {
-        let splitterInset = config.visibleThickness / 2
-        switch layout.value {
-        case .horizontal:
-            return DragGesture()
-                .onChanged { gesture in
-                    let x = max(splitterInset, min(size.width - splitterInset, gesture.location.x))
-                    hide.side = nil    // Otherwise will not be draggable if hidden
-                    privateFraction = min(1 - (minSFraction ?? 0), max(minPFraction ?? 0, x / size.width))
-                }
-                .onEnded { gesture in
-                    updateFraction(to: privateFraction)
-                }
-        case .vertical:
-            return DragGesture()
-                .onChanged { gesture in
-                    let y = max(splitterInset, min(size.height - splitterInset, gesture.location.y))
-                    hide.side = nil    // Otherwise will not be draggable if hidden
-                    privateFraction = min(1 - (minSFraction ?? 0), max(minPFraction ?? 0, y / size.height))
-                }
-                .onEnded { gesture in
-                    updateFraction(to: privateFraction)
-                }
-        }
+        return DragGesture()
+            .onChanged { gesture in
+                hide.side = nil
+                privateFraction = fraction(for: gesture, in: size)
+                previousPosition = layout.isHorizontal ? gesture.location.x : gesture.location.y
+            }
+            .onEnded { gesture in
+                previousPosition = nil
+                updateFraction(to: privateFraction)
+            }
+    }
+    
+    /// Return a new value for privateFraction based on the DragGesture.
+    ///
+    /// The returned value is always within the allowed bounds within size as constrained by the `visibleThickness`
+    /// of the `splitter` and the `minSFraction` and `minPFraction` (if specified).
+    ///
+    /// We use a delta based on `previousPosition` so the `splitter` follows the location where drag begins, not
+    /// the center of the splitter. This way the drag is smooth from the beginning, rather than jumping the splitter location to
+    /// the starting drag point.
+    func fraction(for gesture: DragGesture.Value, in size: CGSize) -> CGFloat {
+        let horizontal = layout.isHorizontal
+        let length = horizontal ? size.width : size.height                                              // Size in direction of dragging
+        let splitterLocation = length * privateFraction                                                 // Splitter position prior to drag
+        let gestureLocation = horizontal ? gesture.location.x : gesture.location.y                      // Gesture location in direction of dragging
+        let gestureTranslation = horizontal ? gesture.translation.width : gesture.translation.height    // Gesture movement since beginning of drag
+        let delta = previousPosition == nil ? gestureTranslation : gestureLocation - previousPosition!  // Amount moved since last change
+        let constrainedLocation = max(halfSpacing, min(length - halfSpacing, splitterLocation + delta)) // New location kept in proper bounds
+        let newFraction = constrainedLocation / length                                                  // New privateFraction without regard to minimums
+        return min(1 - (minSFraction ?? 0), max((minPFraction ?? 0), newFraction))                      // Constrained privateFraction
     }
     
     /// The splitter is draggable if neither side is hidden or neither of the min fractions is specified.
