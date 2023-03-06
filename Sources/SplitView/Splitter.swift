@@ -5,32 +5,32 @@
 //  Created by Steven Harris on 8/18/21.
 //
 
-import SwiftUI
-
 public protocol SplitDivider: View {
     var visibleThickness: CGFloat { get }
 }
 
-/// The Splitter that separates the `primary` from `secondary` views in a `SplitView`.
+import SwiftUI
+
+/// The Splitter that separates the `primary` from `secondary` views in a `Split` view.
 public struct Splitter: SplitDivider {
     
-    @ObservedObject private var layout: LayoutHolder
-    private let config: SplitConfig
-    private var color: Color { config.color }
-    private var inset: CGFloat { config.inset }
-    public var visibleThickness: CGFloat { config.visibleThickness }
-    private var invisibleThickness: CGFloat { config.invisibleThickness }
+    @EnvironmentObject private var layout: LayoutHolder
+    @EnvironmentObject private var styling: SplitStyling
+    private var color: Color { privateColor ?? styling.color }
+    private var inset: CGFloat { privateInset ?? styling.inset }
+    public var visibleThickness: CGFloat { privateVisibleThickness ?? styling.visibleThickness }
+    private var invisibleThickness: CGFloat { privateInvisibleThickness ?? styling.invisibleThickness }
+    private let privateColor: Color?
+    private let privateInset: CGFloat?
+    private let privateVisibleThickness: CGFloat?
+    private let privateInvisibleThickness: CGFloat?
     
     // Defaults
     public static var defaultColor: Color = Color.gray
     public static var defaultInset: CGFloat = 6
     public static var defaultVisibleThickness: CGFloat = 4
     public static var defaultInvisibleThickness: CGFloat = 30
-    
-    // Default .horizontal and .vertical Splitters
-    public static var horizontal: Splitter = Splitter(.horizontal)
-    public static var vertical: Splitter = Splitter(.vertical)
-    
+
     public var body: some View {
         ZStack {
             switch layout.value {
@@ -69,21 +69,11 @@ public struct Splitter: SplitDivider {
         */
     }
     
-    public init(_ layout: LayoutHolder, config: SplitConfig? = nil) {
-        self.layout = layout
-        self.config = config ?? SplitConfig()
+    public init(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
+        privateColor = color
+        privateInset = inset
+        privateVisibleThickness = visibleThickness
+        privateInvisibleThickness = invisibleThickness
     }
     
-    public init(_ layout: SplitLayout, config: SplitConfig? = nil) {
-        self.init(LayoutHolder(layout), config: config)
-    }
-    
-}
-
-
-struct Splitter_Previews: PreviewProvider {
-    static var previews: some View {
-        Splitter.horizontal
-        Splitter.vertical
-    }
 }
