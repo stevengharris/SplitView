@@ -77,3 +77,26 @@ public struct Splitter: SplitDivider {
     }
     
 }
+
+struct Splitter_Previews: PreviewProvider {
+    static var previews: some View {
+        Splitter()
+            .environmentObject(LayoutHolder(.horizontal))
+            .environmentObject(SplitStyling())
+        Splitter(color: Color.red, inset: 2, visibleThickness: 8, invisibleThickness: 30)
+            .environmentObject(LayoutHolder(.horizontal))
+            .environmentObject(SplitStyling())
+        Splitter.line()
+            .environmentObject(LayoutHolder(.horizontal))
+            .environmentObject(SplitStyling())
+        Splitter()
+            .environmentObject(LayoutHolder(.vertical))
+            .environmentObject(SplitStyling())
+        Splitter(color: Color.red, inset: 2, visibleThickness: 8, invisibleThickness: 30)
+            .environmentObject(LayoutHolder(.vertical))
+            .environmentObject(SplitStyling())
+        Splitter.line()
+            .environmentObject(LayoutHolder(.vertical))
+            .environmentObject(SplitStyling())
+    }
+}

@@ -18,7 +18,7 @@ public struct VSplit<P: View, D: View, S: View>: View {
     
     public var body: some View {
         Split(primary: { primary }, secondary: { secondary })
-            .layout(.vertical)
+            .layout(LayoutHolder(.vertical))
             .styling(styling)
             .constraints(constraints)
             .splitter {
@@ -29,12 +29,12 @@ public struct VSplit<P: View, D: View, S: View>: View {
             .hide(hide)
     }
     
-    public init(@ViewBuilder primary: @escaping ()->P, @ViewBuilder secondary: @escaping ()->S) where D == Splitter {
+    public init(@ViewBuilder top: @escaping ()->P, @ViewBuilder bottom: @escaping ()->S) where D == Splitter {
         let fraction = FractionHolder()
         let hide = SideHolder()
         let styling = SplitStyling()
         let constraints = SplitConstraints()
-        self.init(fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary() }, splitter: { D() }, secondary: { secondary() })
+        self.init(fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { top() }, splitter: { D() }, secondary: { bottom() })
     }
     
     private init(fraction: FractionHolder, hide: SideHolder, styling: SplitStyling, constraints: SplitConstraints, @ViewBuilder primary: @escaping ()->P, @ViewBuilder splitter: @escaping ()->D, @ViewBuilder secondary: @escaping ()->S) {
@@ -63,11 +63,13 @@ public struct VSplit<P: View, D: View, S: View>: View {
         return VSplit<P, T, S>(fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary }, splitter: splitter, secondary: { secondary })
     }
     
+    ///  Return a new instance of VSplit with `constraints` set to these values.
     public func constraints(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil) -> VSplit {
         let constraints = SplitConstraints(minPFraction: minPFraction, minSFraction: minSFraction, priority: priority)
         return VSplit(fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
+    ///  Return a new instance of VSplit with `styling` set to these values.
     public func styling(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) -> VSplit {
         let styling = SplitStyling(color: color, inset: inset, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness)
         return VSplit(fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary }, splitter: { splitter }, secondary: { secondary })
@@ -93,4 +95,32 @@ public struct VSplit<P: View, D: View, S: View>: View {
         self.hide(SideHolder(side))
     }
     
+}
+
+struct VSplit_Previews: PreviewProvider {
+    static var previews: some View {
+        VSplit(
+            top: { Color.green },
+            bottom: {
+                HSplit(
+                    left: { Color.red },
+                    right: {
+                        VSplit(
+                            top: { Color.blue },
+                            bottom: { Color.yellow }
+                        )
+                    }
+                )
+            }
+        )
+        
+        VSplit(
+            top: {
+                HSplit(left: { Color.red }, right: { Color.green })
+            },
+            bottom: {
+                HSplit(left: { Color.yellow }, right: { Color.blue })
+            }
+        )
+    }
 }

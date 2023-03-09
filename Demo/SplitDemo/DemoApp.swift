@@ -18,8 +18,8 @@ struct DemoApp: View {
             switch demoID {
             case .simpleDefaults:
                 HSplit(
-                    primary: { Color.green },
-                    secondary: { Color.red }
+                    left: { Color.green },
+                    right: { Color.red }
                 )
             case .simpleAdjustable:
                 Split(

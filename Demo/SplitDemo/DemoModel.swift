@@ -23,8 +23,8 @@ enum DemoID: String, CaseIterable {
 /// The `label` is used for the Menu, `description` for the Text at the bottom.
 ///
 /// The `holders` identify the LayoutHolder and SideHolders that can be used to control
-/// the various SplitViews in the demo. These need to be defined once, so that the
-/// DemoToolbar at the top and the individual SplitViews are holding onto the same
+/// the various Split views in the demo. These need to be defined once, so that the
+/// DemoToolbar at the top and the individual Split views are holding onto the same
 /// ObservableObject.
 let demos: [DemoID : Demo] = [
     .simpleDefaults :
@@ -70,14 +70,14 @@ let demos: [DemoID : Demo] = [
 ]
 
 /// Demo holds onto the labels for the Menu and descriptions for the Text at the bottom, along with
-/// the SplitStateHolders that are used by the DemoToolbar buttons and the SplitViews themselves.
+/// the SplitStateHolders that are used by the DemoToolbar buttons and the Split views themselves.
 struct Demo {
     var label: String
     var description: String
     var holders: [SplitStateHolder] = []
 }
 
-/// The combination of LayoutHolder and SideHolder used in one SplitView.
+/// The combination of LayoutHolder and SideHolder used in one Split view.
 ///
 /// Has to be Identifiable because we ForEach over the `demo.holders` to create the
 /// Buttons dynamically.

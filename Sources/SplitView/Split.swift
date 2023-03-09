@@ -205,10 +205,9 @@ public struct Split<P: View, D: View, S: View>: View {
     private func isDraggable() -> Bool {
         guard hide.side != nil || minPFraction != nil || minSFraction != nil else { return true }
         guard let side = hide.side else { return true }
-        switch side {
-        case .primary:
+        if side.isPrimary {
             return minPFraction == nil
-        case .secondary:
+        } else {
             return minSFraction == nil
         }
     }
@@ -250,7 +249,7 @@ public struct Split<P: View, D: View, S: View>: View {
     
     /// Return a new Split with the `splitter` set to a new type.
     ///
-    /// If the splitter is a SplitDivider, get its `visibleThickness` and set that in `styling` before returning.
+    /// If the splitter is a SplitDivider, then get its `visibleThickness` and set it in `styling` before returning.
     public func splitter<T>(@ViewBuilder _ splitter: @escaping ()->T) -> Split<P, T, S> where T: View {
         let newSplitter = splitter()
         if let splitDivider = newSplitter as? (any SplitDivider) {
@@ -259,82 +258,94 @@ public struct Split<P: View, D: View, S: View>: View {
         return Split<P, T, S>(layout, fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary }, splitter: splitter, secondary: { secondary })
     }
     
+    /// Return a new instance of Split with `constraints` set to a SplitConstraints holding these values.
     public func constraints(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil) -> Split {
         let constraints = SplitConstraints(minPFraction: minPFraction, minSFraction: minSFraction, priority: priority)
         return Split(layout, fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
+    /// Return a new instance of Split with `constraints` set to this SplitConstraints.
+    ///
+    /// This is a convenience method for HSplit and VSplit.
     public func constraints(_ constraints: SplitConstraints) -> Split {
         self.constraints(minPFraction: constraints.minPFraction, minSFraction: constraints.minSFraction, priority: constraints.priority)
     }
     
+    /// Return a new instance of Split with `styling` set to a SplitStyling holding these values.
+    ///
+    /// This is a convenience method for `Splitter.line()` which is also used by `Splitter.invisible()`.
     public func styling(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) -> Split {
         let styling = SplitStyling(color: color, inset: inset, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness)
         return Split(layout, fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
+    /// Return a new instance of Split with `styling` set to this SplitStyling.
+    ///
+    /// This is a convenience method for HSplit and VSplit.
     public func styling(_ styling: SplitStyling) -> Split {
         self.styling(color: styling.color, inset: styling.inset, visibleThickness: styling.visibleThickness, invisibleThickness: styling.invisibleThickness)
     }
     
-    /// Return a new instance of Split with `layout` set to this LayoutHolder
+    /// Return a new instance of Split with `layout` set to this LayoutHolder.
+    ///
+    /// Split only supports `layout` specified using a LayoutHolder because if you are not going
+    /// to change the `layout`, then you should just use HSplit or VSplit.
     public func layout(_ layout: LayoutHolder) -> Split {
         Split(layout, fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
-    /// Return a new instance of Split with `layout` set to a LayoutHolder holding onto this SplitLayout
-    public func layout(_ layout: SplitLayout) -> Split {
-        self.layout(LayoutHolder(layout))
-    }
-    
-    /// Return a new instance of Split with `fraction` set to this FractionHolder
+    /// Return a new instance of Split with `fraction` set to this FractionHolder.
     public func fraction(_ fraction: FractionHolder) -> Split {
         Split(layout, fraction: fraction, hide: hide, styling: styling, constraints: constraints, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
-    /// Return a new instance of Split with `fraction` set to a FractionHolder holding onto this CGFloat
+    /// Return a new instance of Split with `fraction` set to a FractionHolder holding onto this CGFloat.
     public func fraction(_ fraction: CGFloat) -> Split {
         self.fraction(FractionHolder(fraction))
     }
     
-    /// Return a new instance of Split with `hide` set to this SideHolder
+    /// Return a new instance of Split with `hide` set to this SideHolder.
     public func hide(_ side: SideHolder) -> Split {
         Split(layout, fraction: fraction, hide: side, styling: styling, constraints: constraints, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
-    /// Return a new instance of Split with `hide` set to a SideHolder holding onto this SplitSide
+    /// Return a new instance of Split with `hide` set to a SideHolder holding onto this SplitSide.
     public func hide(_ side: SplitSide) -> Split {
         self.hide(SideHolder(side))
     }
     
 }
 
-//struct Split_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Split(.horizontal,
-//            fraction: FractionHolder(0.75),
-//            primary: { Color.red },
-//            splitter: { Splitter.horizontal },
-//            secondary: {
-//                Split(.vertical,
-//                    primary: { Color.blue },
-//                    splitter: { Splitter.vertical },
-//                    secondary: {
-//                        Split(.vertical,
-//                            primary: { Color.green },
-//                            splitter: { Splitter.vertical },
-//                            secondary: { Color.yellow }
-//                        )
-//                    }
-//                )
-//            }
-//        )
-//        .frame(width: 400, height: 400)
-//        Split(.horizontal,
-//            primary: { Split(.vertical, primary: { Color.red }, splitter: { Splitter.vertical }, secondary: { Color.green }) },
-//            splitter: { Splitter.horizontal },
-//            secondary: { Split(.horizontal, primary: { Color.blue }, splitter: { Splitter.horizontal }, secondary: { Color.yellow }) }
-//        )
-//        .frame(width: 400, height: 400)
-//    }
-//}
+struct Split_Previews: PreviewProvider {
+    static var previews: some View {
+        Split(
+            primary: { Color.green },
+            secondary: {
+                Split(
+                    primary: { Color.red },
+                    secondary: {
+                        Split(
+                            primary: { Color.blue },
+                            secondary: { Color.yellow }
+                        )
+                        .layout(LayoutHolder(.horizontal))
+                    }
+                )
+                .layout(LayoutHolder(.vertical))
+            }
+        )
+        .layout(LayoutHolder(.horizontal))
+        
+        Split(
+            primary: {
+                Split(primary: { Color.red }, secondary: { Color.green })
+                    .layout(LayoutHolder(.vertical))
+            },
+            secondary: {
+                Split(primary: { Color.yellow }, secondary: { Color.blue })
+                    .layout(LayoutHolder(.vertical))
+            }
+        )
+        .layout(LayoutHolder(.horizontal))
+    }
+}

@@ -15,13 +15,22 @@ public enum SplitLayout: String, CaseIterable {
 
 /// The two sides of a SplitView.
 ///
-/// For `SplitLayout.Horizontal`, `Primary` is left, `Secondary` is right.
-/// For `SplitLayout.Vertical`, `Primary` is top, `Secondary` is bottom.
-/// Used to identify the side (if any) which is hidden.
+/// Use `isPrimary` and `isSecondary` rather than accessing the cases directly.
+///
+/// For `SplitLayout.horizontal`, `primary` is left, `secondary` is right.
+/// For `SplitLayout.vertical`, `primary` is top, `secondary` is bottom.
+///
+/// For convenience and clarity when creating and constraining an HSplit view, you can use
+/// `left` and `right` instead of `primary` and `secondary`. Similarly you can
+/// use `top` and `bottom` when creating and constraining a VSplit view.
 public enum SplitSide: String {
     case primary
     case secondary
+    case left
+    case right
+    case top
+    case bottom
     
-    var isPrimary: Bool { self == .primary }
-    var isSecondary: Bool { self == .secondary }
+    var isPrimary: Bool { self == .primary || self == .left || self == .top }
+    var isSecondary: Bool { self == .secondary || self == .right || self == .bottom }
 }

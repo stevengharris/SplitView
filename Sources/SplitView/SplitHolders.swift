@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// An ObservableObject that `SplitView` observes to change what its `layout` is.
+/// An ObservableObject that `Split` view observes to change what its `layout` is.
 ///
 /// Use the static `usingUserDefaults` method to save state automatically in `UserDefaults.standard`.
 public class LayoutHolder: ObservableObject {
@@ -51,7 +51,7 @@ public class LayoutHolder: ObservableObject {
 
 }
 
-/// An ObservableObject that `SplitView` observes to change what fraction of the width/height the `splitter`
+/// An ObservableObject that `Split` view observes to change what fraction of the width/height the `splitter`
 /// will be positioned at upon open.
 ///
 /// Use the static `usingUserDefaults` method to save state automatically in `UserDefaults.standard`.
@@ -79,7 +79,7 @@ public class FractionHolder: ObservableObject {
     }
 }
 
-/// An ObservableObject that `SplitView` observes to change whether  one of the `SplitSide`s is hidden.
+/// An ObservableObject that `Split` view observes to change whether  one of the `SplitSide`s is hidden.
 ///
 /// Use the static `usingUserDefaults` method to save state automatically in `UserDefaults.standard`.
 public class SideHolder: ObservableObject {

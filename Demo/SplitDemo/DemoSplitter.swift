@@ -11,7 +11,7 @@ import SplitView
 /// A custom splitter for the `.customSplitter` demo.
 ///
 /// Note a custom splitter must conform to SplitDivider protocol, which means it is a View that can tell the
-/// SplitView what its `visibleThickness` is. The SplitView separates the `primary` and `secondary`
+/// Split view what its `visibleThickness` is. The Split view separates the `primary` and `secondary`
 /// views by the `visibleThickness` of the SplitDivider.
 ///
 /// A custom splitter should be sensitive to the layout, because if the layout changes, then the splitter needs to
