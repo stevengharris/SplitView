@@ -15,5 +15,6 @@ let package = Package(
         .target(
             name: "SplitView",
             dependencies: []),
+        .testTarget(name: "SplitViewTests", dependencies: ["SplitView"]),
     ]
 )
