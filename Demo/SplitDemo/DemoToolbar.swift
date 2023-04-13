@@ -25,8 +25,10 @@ struct DemoToolbar: View {
                             demoID = id
                         }
                     }
+                    .accessibilityIdentifier("demoButton_\(String(describing: id))") // Accessibility identifier for each demo button
                 }
             }
+            .accessibilityIdentifier("demoMenu") // Accessibility identifier for the menu
             Spacer()
             AdjusterButtons(demo: demo)
         }
@@ -50,7 +52,9 @@ struct AdjusterButtons: View {
             ForEach(holders) { holder in
                 Divider()
                 AdjustHideButton(layout: holder.layout, hide: holder.hide)
+                    .accessibilityIdentifier("adjustHideButton_\(String(describing: demo.accessibilityIdentifier))_\(String(describing: holder.accessibilityIdentifier))") // Accessibility identifier for each hide button
                 AdjustLayoutButton(layout: holder.layout, hide: holder.hide)
+                    .accessibilityIdentifier("adjustLayoutButton_\(String(describing: demo.accessibilityIdentifier))_\(String(describing: holder.accessibilityIdentifier))") // Accessibility identifier for each layout button
             }
         }
     }

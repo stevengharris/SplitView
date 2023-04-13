@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		89F6670F29E7BE92004FA873 /* SplitDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89F6670E29E7BE92004FA873 /* SplitDemoUITests.swift */; };
+		89F6671129E7BE92004FA873 /* SplitDemoUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89F6671029E7BE92004FA873 /* SplitDemoUITestsLaunchTests.swift */; };
+		89F6671A29E8767A004FA873 /* UIIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89F6671929E8767A004FA873 /* UIIdentifiers.swift */; };
 		AAD5CF7329956D1C00F94B1D /* SplitDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD5CF7229956D1C00F94B1D /* SplitDemo.swift */; };
 		AAD5CF7529956D1C00F94B1D /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD5CF7429956D1C00F94B1D /* DemoApp.swift */; };
 		AAD5CF7729956D1D00F94B1D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AAD5CF7629956D1D00F94B1D /* Assets.xcassets */; };
@@ -17,7 +20,21 @@
 		AAF9E0CA2996F85A00EDD306 /* DemoSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF9E0C92996F85A00EDD306 /* DemoSplitter.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		89F6671229E7BE92004FA873 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AAD5CF6729956D1C00F94B1D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AAD5CF6E29956D1C00F94B1D;
+			remoteInfo = SplitDemo;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		89F6670C29E7BE92004FA873 /* SplitDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SplitDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		89F6670E29E7BE92004FA873 /* SplitDemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitDemoUITests.swift; sourceTree = "<group>"; };
+		89F6671029E7BE92004FA873 /* SplitDemoUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitDemoUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		89F6671929E8767A004FA873 /* UIIdentifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIIdentifiers.swift; sourceTree = "<group>"; };
 		AAC4D89C29956F14005FDD5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		AAD5CF6F29956D1C00F94B1D /* SplitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SplitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAD5CF7229956D1C00F94B1D /* SplitDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitDemo.swift; sourceTree = "<group>"; };
@@ -31,6 +48,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		89F6670929E7BE92004FA873 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AAD5CF6C29956D1C00F94B1D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -42,10 +66,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		89F6670D29E7BE92004FA873 /* SplitDemoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				89F6670E29E7BE92004FA873 /* SplitDemoUITests.swift */,
+				89F6671029E7BE92004FA873 /* SplitDemoUITestsLaunchTests.swift */,
+				89F6671929E8767A004FA873 /* UIIdentifiers.swift */,
+			);
+			path = SplitDemoUITests;
+			sourceTree = "<group>";
+		};
 		AAD5CF6629956D1C00F94B1D = {
 			isa = PBXGroup;
 			children = (
 				AAD5CF7129956D1C00F94B1D /* SplitDemo */,
+				89F6670D29E7BE92004FA873 /* SplitDemoUITests */,
 				AAD5CF7029956D1C00F94B1D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				AAD5CF6F29956D1C00F94B1D /* SplitDemo.app */,
+				89F6670C29E7BE92004FA873 /* SplitDemoUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,6 +121,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		89F6670B29E7BE92004FA873 /* SplitDemoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 89F6671629E7BE92004FA873 /* Build configuration list for PBXNativeTarget "SplitDemoUITests" */;
+			buildPhases = (
+				89F6670829E7BE92004FA873 /* Sources */,
+				89F6670929E7BE92004FA873 /* Frameworks */,
+				89F6670A29E7BE92004FA873 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				89F6671329E7BE92004FA873 /* PBXTargetDependency */,
+			);
+			name = SplitDemoUITests;
+			productName = SplitDemoUITests;
+			productReference = 89F6670C29E7BE92004FA873 /* SplitDemoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		AAD5CF6E29956D1C00F94B1D /* SplitDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AAD5CF7D29956D1D00F94B1D /* Build configuration list for PBXNativeTarget "SplitDemo" */;
@@ -112,9 +166,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1420;
+				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
+					89F6670B29E7BE92004FA873 = {
+						CreatedOnToolsVersion = 14.3;
+						TestTargetID = AAD5CF6E29956D1C00F94B1D;
+					};
 					AAD5CF6E29956D1C00F94B1D = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -137,11 +195,19 @@
 			projectRoot = "";
 			targets = (
 				AAD5CF6E29956D1C00F94B1D /* SplitDemo */,
+				89F6670B29E7BE92004FA873 /* SplitDemoUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		89F6670A29E7BE92004FA873 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AAD5CF6D29956D1C00F94B1D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -154,6 +220,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		89F6670829E7BE92004FA873 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				89F6671129E7BE92004FA873 /* SplitDemoUITestsLaunchTests.swift in Sources */,
+				89F6671A29E8767A004FA873 /* UIIdentifiers.swift in Sources */,
+				89F6670F29E7BE92004FA873 /* SplitDemoUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AAD5CF6B29956D1C00F94B1D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -168,7 +244,49 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		89F6671329E7BE92004FA873 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AAD5CF6E29956D1C00F94B1D /* SplitDemo */;
+			targetProxy = 89F6671229E7BE92004FA873 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		89F6671429E7BE92004FA873 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cchau.SplitDemoUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = SplitDemo;
+			};
+			name = Debug;
+		};
+		89F6671529E7BE92004FA873 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cchau.SplitDemoUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = SplitDemo;
+			};
+			name = Release;
+		};
 		AAD5CF7B29956D1D00F94B1D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -360,6 +478,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		89F6671629E7BE92004FA873 /* Build configuration list for PBXNativeTarget "SplitDemoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				89F6671429E7BE92004FA873 /* Debug */,
+				89F6671529E7BE92004FA873 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		AAD5CF6A29956D1C00F94B1D /* Build configuration list for PBXProject "SplitDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
