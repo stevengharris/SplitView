@@ -538,6 +538,10 @@ NavigationSplitView would be useful.
 
 ## History
 
+### Version 3.1
+
+* Add onDrag modifier to be able to monitor and respond to splitter movement. Update README accordingly.
+
 ### Version 3.0
 
 * Incompatible change from Version 2 to change from an extensive set of View modifiers to explicit use of Split, HSplit, and VSplit. Most of the previous version's `split` View modifiers have been removed in this version.
