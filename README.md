@@ -26,6 +26,7 @@ in its last state between application restarts.
 * Use your own custom `splitter` or the default Splitter.
 * Make splitters "invisible" (i.e., zero `visibleThickness`) but still draggable for 
 resizing.
+* Monitor splitter movement in realtime, providing a simple way to create a custom slider.
 
 ## Motivation
 
@@ -52,7 +53,7 @@ use a Split view.
 
 **Note:** You can also use the `.split`, `.vSplit`, and `.hSplit` view modifiers that come 
 with the package to create a Split, VSplit, and HSplit view if that makes more sense to you.
-See the discussion in [Implementation](#Implementation).
+See the discussion in [Style](#Style).
 
 Once you have created a Split, HSplit, or VSplit view, you can use view modifiers on them 
 to:
@@ -372,6 +373,56 @@ struct ContentView: View {
 }
 ```
 
+### Monitoring And Responding To Splitter Movement
+
+You can specify a callback for the split view to execute as you drag the splitter. The 
+callback reports the `privateFraction` being tracked; i.e., the fraction of the full 
+width/height occupied by the left/top side. Specify the callback using the `onDrag(_:)`
+modifier for any of the split views. 
+
+Here is an example of a DemoSlider that uses the `onDrag(_:)` modifier to update 
+a Text view showing the percentage each side is occupying.
+
+```
+struct DemoSlider: View {
+    @State private var privateFraction: CGFloat = 0.5
+    var body: some View {
+        HSplit(
+            left: {
+                ZStack {
+                    Color.green
+                    Text(percentString(for: .left))
+                }
+            },
+            right: {
+                ZStack {
+                    Color.red
+                    Text(percentString(for: .right))
+                }
+            }
+        )
+        .onDrag { fraction in privateFraction = fraction }
+        .frame(width: 400, height: 30)
+    }
+
+    /// Return a string indicating the percentage occupied by `side`
+    func percentString(for side: SplitSide) -> String {
+        var percent: Int
+        if side.isPrimary {
+            percent = Int(round(100 * privateFraction))
+        } else {
+            percent = Int(round(100 * (1 - privateFraction)))
+        }
+        // Empty string if the side will be too small to show it
+        return percent < 10 ? "" : "\(percent)%"
+    }
+}
+```
+
+It looks like this:
+
+![DemoSlider](https://user-images.githubusercontent.com/1020361/231880861-c710dfb8-ada3-41e2-802b-a71d947b867f.mov)
+
 ### Prioritizing The Size Of A Side
 
 When you want a sidebar type of arrangement using HSplit views, you often want 
@@ -486,6 +537,10 @@ a split view that adapted to device orientation and form factors somewhat like
 NavigationSplitView would be useful.
 
 ## History
+
+### Version 3.1
+
+* Add onDrag modifier to be able to monitor and respond to splitter movement. Update README accordingly.
 
 ### Version 3.0
 

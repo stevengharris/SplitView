@@ -31,6 +31,6 @@ public enum SplitSide: String {
     case top
     case bottom
     
-    var isPrimary: Bool { self == .primary || self == .left || self == .top }
-    var isSecondary: Bool { self == .secondary || self == .right || self == .bottom }
+    public var isPrimary: Bool { self == .primary || self == .left || self == .top }
+    public var isSecondary: Bool { self == .secondary || self == .right || self == .bottom }
 }
