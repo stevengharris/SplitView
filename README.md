@@ -484,9 +484,9 @@ to its size. The size changes when its containing view changes size (e.g., resiz
 window on the Mac or when nested in another Split view whose splitter is dragged).
 
 The three views, Split, HSplit, and VSplit all support the same modifiers 
-to adjust `fraction`, `hide`, `styling`, `constraints`, and `splitter`. The Split 
-view also has a modifier for `layout` (which is also used by HSplit and VSplit) 
-and a few convenience modifiers used by HSplit and VSplit.
+to adjust `fraction`, `hide`, `styling`, `constraints`, `onDrag`, and `splitter`. 
+The Split view also has a modifier for `layout` (which is also used by HSplit and 
+VSplit) and a few convenience modifiers used by HSplit and VSplit.
 
 ### Style
 
@@ -519,8 +519,8 @@ Split(primary: { Color.green }, secondary: { Color.red })
 ## Issues
 
 The only issue I am aware of is what appears to be a harmless log message when 
-dragging the Splitter to cause a view size to go to zero. The message shows up in the 
-Xcode console as:
+dragging the Splitter to cause a view size to go to zero on Mac Catalyst only. 
+The message shows up in the Xcode console as:
 
 ```
 [API] cannot add handler to 3 from 3 - dropping

@@ -46,7 +46,6 @@ public struct Split<P: View, D: View, S: View>: View {
     @State private var previousPosition: CGFloat?
     /// Spacing is zero when the splitter isn't showing; i.e., when it is not draggable.
     private var spacing: CGFloat { isDraggable() ? styling.visibleThickness : 0 }
-    private let halfSpacing: CGFloat
     private let minPFraction: CGFloat?
     private let minSFraction: CGFloat?
     
@@ -119,7 +118,6 @@ public struct Split<P: View, D: View, S: View>: View {
         self.splitter = splitter()
         self.secondary = secondary()
         _privateFraction = State(initialValue: fraction.value)  // Local fraction updated during drag
-        halfSpacing = styling.visibleThickness / 2
         minPFraction = constraints.minPFraction
         minSFraction = constraints.minSFraction
     }
@@ -150,10 +148,7 @@ public struct Split<P: View, D: View, S: View>: View {
     
     /// The Gesture recognized by the `splitter`.
     ///
-    /// The main function of dragging is to modify the `privateFraction`, which is always between 0 and 1 but
-    /// doesn't exceed the bounds of the `visibleThickness` (or `minPFraction`/`minSFraction` if specified).
-    /// In other words, while `privateFraction` can be 0 or 1 when `visibleThickess` is zero, it's almost always
-    /// between those values because the `splitter` is visible and/or the minimum fractions were specified.
+    /// The main function of dragging is to modify the `privateFraction`, which is always between 0 and 1.
     ///
     /// Whenever we drag, we also set `hide.value` to `nil`. This is because the `pLength` and
     /// `sLength` key off of `hide` to return the full width/height when its value is non-nil.
@@ -191,7 +186,7 @@ public struct Split<P: View, D: View, S: View>: View {
         let gestureLocation = horizontal ? gesture.location.x : gesture.location.y                      // Gesture location in direction of dragging
         let gestureTranslation = horizontal ? gesture.translation.width : gesture.translation.height    // Gesture movement since beginning of drag
         let delta = previousPosition == nil ? gestureTranslation : gestureLocation - previousPosition!  // Amount moved since last change
-        let constrainedLocation = max(halfSpacing, min(length - halfSpacing, splitterLocation + delta)) // New location kept in proper bounds
+        let constrainedLocation = max(0, min(length, splitterLocation + delta))                         // New location kept in proper bounds
         let newFraction = constrainedLocation / length                                                  // New privateFraction without regard to minimums
         return min(1 - (minSFraction ?? 0), max((minPFraction ?? 0), newFraction))                      // Constrained privateFraction
     }
