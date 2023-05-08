@@ -163,7 +163,7 @@ public struct Split<P: View, D: View, S: View>: View {
                 unhide(in: size)    // Unhide if the splitter is hidden, but resetting privateFraction first
                 privateFraction = fraction(for: gesture, in: size)
                 onDrag?(privateFraction)
-                previousPosition = layout.isHorizontal ? gesture.location.x : gesture.location.y
+                previousPosition = layout.isHorizontal ? privateFraction * size.width : privateFraction * size.height
             }
             .onEnded { gesture in
                 previousPosition = nil
