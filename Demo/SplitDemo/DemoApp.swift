@@ -26,7 +26,7 @@ struct DemoApp: View {
                     primary: { Color.green },
                     secondary: { Color.red }
                 )
-                .styling(color: .cyan)
+                .styling(color: .yellow)
                 .layout(demo.holders[0].layout)
                 .hide(demo.holders[0].hide)
             case .nestedAdjustable:
@@ -57,7 +57,7 @@ struct DemoApp: View {
                     secondary: { Color.red }
                 )
                 .splitter { Splitter.invisible() }
-                .constraints(minPFraction: 0.2, minSFraction: 0.2)
+                .constraints(minPFraction: 0.2, minSFraction: 0.2, hideAtMinS: true)
                 .layout(demo.holders[0].layout)
                 .hide(demo.holders[0].hide)
             case .customSplitter:

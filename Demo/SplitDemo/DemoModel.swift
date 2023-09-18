@@ -35,7 +35,7 @@ let demos: [DemoID : Demo] = [
     .simpleAdjustable :
         Demo(
             label: "Simple adjustable",
-            description: "Adjustable split view with cyan default Splitter",
+            description: "Adjustable split view with yellow default Splitter",
             holders: [SplitStateHolder(layout: LayoutHolder(), hide: SideHolder())]
         ),
     .nestedAdjustable :
@@ -51,7 +51,7 @@ let demos: [DemoID : Demo] = [
     .invisibleSplitter:
         Demo(
             label: "Invisible splitter",
-            description: "Invisible splitter with constraints.",
+            description: "Invisible splitter with constraints, hides secondary after drag.",
             holders: [SplitStateHolder(layout: LayoutHolder(), hide: SideHolder())]
         ),
     .customSplitter:
