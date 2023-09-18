@@ -157,6 +157,9 @@ public struct Split<P: View, D: View, S: View>: View {
     /// is holding onto it. If, for example, a FractionHolder was passed-in using the `fraction()` modifier
     /// here or in HSplit/VSplit, then we keep its value in sync so that next time the Split view is opened, it
     /// maintains its state.
+    ///
+    /// If hideAtMinP/hideAtMinS is set in constraints, automatically hide the side when done dragging if
+    /// privateFraction is at its min value.
     private func drag(in size: CGSize) -> some Gesture {
         return DragGesture()
             .onChanged { gesture in
@@ -168,7 +171,23 @@ public struct Split<P: View, D: View, S: View>: View {
             .onEnded { gesture in
                 previousPosition = nil
                 fraction.value = privateFraction
+                hideIfNeeded()
             }
+    }
+    
+    /// Hide the side if minPFraction/minSFraction is specified and hideAtMinP/hideAtMinS is true.
+    ///
+    /// Use a rounded-to-3-decimal-places privateFraction because... floating point.
+    private func hideIfNeeded() {
+        if let minPFraction, constraints.hideAtMinP {
+            if (round(privateFraction * 1000) / 1000.0) <= minPFraction {
+                hide.side = .primary
+            }
+        } else if let minSFraction, constraints.hideAtMinS {
+            if (round((1 - privateFraction) * 1000) / 1000.0) <= minSFraction {
+                hide.side = .secondary
+            }
+        }
     }
     
     /// Return a new value for privateFraction based on the DragGesture.
@@ -258,8 +277,8 @@ public struct Split<P: View, D: View, S: View>: View {
     }
     
     /// Return a new instance of Split with `constraints` set to a SplitConstraints holding these values.
-    public func constraints(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil) -> Split {
-        let constraints = SplitConstraints(minPFraction: minPFraction, minSFraction: minSFraction, priority: priority)
+    public func constraints(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil, hideAtMinP: Bool = false, hideAtMinS: Bool = false) -> Split {
+        let constraints = SplitConstraints(minPFraction: minPFraction, minSFraction: minSFraction, priority: priority, hideAtMinP: hideAtMinP, hideAtMinS: hideAtMinS)
         return Split(layout, fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
@@ -267,7 +286,7 @@ public struct Split<P: View, D: View, S: View>: View {
     ///
     /// This is a convenience method for HSplit and VSplit.
     public func constraints(_ constraints: SplitConstraints) -> Split {
-        self.constraints(minPFraction: constraints.minPFraction, minSFraction: constraints.minSFraction, priority: constraints.priority)
+        self.constraints(minPFraction: constraints.minPFraction, minSFraction: constraints.minSFraction, priority: constraints.priority, hideAtMinP: constraints.hideAtMinP, hideAtMinS: constraints.hideAtMinS)
     }
     
     /// Return a new instance of Split with `onDrag` set to `callback`.

@@ -261,6 +261,29 @@ will not be shown at all when it is not draggable. Again: a splitter will only b
 non-draggable when a side is hidden and the corresponding `minPFraction` or 
 `minSFraction` is specified.
 
+### Hide-On-Drag
+
+When you constrain the fraction of the primary or secondary side, you may want the 
+side to hide automatically when you drag past the constraint. This is a kind of 
+shortcut to avoid having to press a button to hide a side. You can see an example of 
+it in Xcode when you drag the splitter between the editor area in the middle and the 
+Inspector on the right beyond the constraint Xcode puts on the Inspector width. Because 
+in Xcode the splitter between the editor area and the Inspector is 
+[invisible](### Invisible Splitters), once it's hidden, you cannot drag it back out. 
+You need a button to invoke the hide/show action, as discussed 
+[earlier](### Modifying and Constraining the Default Splitter).
+
+To use hide-on-drag, add `hideAtMinP` and/or `hideAtMinS` to your `constraints` definition.
+For example, the following will constrain dragging between 20% and 80% of the width, but 
+when the drag gesture ends at or beyond the 80% mark on the right, the secondary side will 
+hide. Note also that in this case, the primary side doesn't hide when the drag gesture ends
+at or beyond the 20% mark on the left:
+
+```
+HSplit(left: { Color.red }, right: { Color.green })
+    .constraints(minPFraction: 0.2, minSFraction: 0.2, hideAtMinS: true)
+```
+
 ### Custom Splitters
 
 By default the Split, HSplit, and VSplit views all use the default Splitter view. You can 
