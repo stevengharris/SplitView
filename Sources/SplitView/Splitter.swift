@@ -53,20 +53,19 @@ public struct Splitter: SplitDivider {
             }
         }
         .contentShape(Rectangle())
-        /*
-         TODO: This seems to work okay in simple situations, but is kinda janky in others, so removing for now
+        // Perhaps should consider some kind of custom hoverEffect, since the cursor change
+        // on hover doesn't work on iOS.
         .onHover { inside in
-            // Perhaps should consider some kind of custom hoverEffect, since the cursor change
-            // doesn't work on iOS
-            #if targetEnvironment(macCatalyst)
+            #if targetEnvironment(macCatalyst) || os(macOS)
+            // With nested split views, it's possible to transition from one Splitter to another,
+            // so we always need to pop the current cursor (a no-op when it's the only one). We
+            // may or may not push the hover cursor depending on whether it's inside or not.
+            NSCursor.pop()
             if inside {
                 layout.isHorizontal ? NSCursor.resizeLeftRight.push() : NSCursor.resizeUpDown.push()
-            } else {
-                NSCursor.pop()
             }
             #endif
         }
-        */
     }
     
     public init(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
