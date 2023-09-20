@@ -20,6 +20,10 @@ import SplitView
 ///
 /// Like the default Splitter, the DemoSplitter uses a clear Color at the bottom of a ZStack to define what its
 /// boundaries are, so that the drag gestures respond within this clear Color and the rectangle of the ZStack.
+///
+/// Note that the `onHover` cursor change is only applied to the Color.clear, not to the embedded button to
+/// hide/show the view. You would want to use a similar technique if your custom splitter has areas your user
+/// interacts with. See the splitter between the editing area and the debug/console in Xcode as an example.
 struct DemoSplitter: SplitDivider {
     var visibleThickness: CGFloat = 20
     @ObservedObject var layout: LayoutHolder
@@ -35,6 +39,17 @@ struct DemoSplitter: SplitDivider {
                 Color.clear
                     .frame(width: 30)
                     .padding(0)
+                    .onHover { inside in
+                        #if targetEnvironment(macCatalyst) || os(macOS)
+                        // With nested split views, it's possible to transition from one Splitter to another,
+                        // so we always need to pop the current cursor (a no-op when it's the only one). We
+                        // may or may not push the hover cursor depending on whether it's inside or not.
+                        NSCursor.pop()
+                        if inside {
+                            NSCursor.resizeLeftRight.push()
+                        }
+                        #endif
+                    }
                 Button(
                     action: { withAnimation { hide.toggle() } },
                     label: {
@@ -49,6 +64,17 @@ struct DemoSplitter: SplitDivider {
                 Color.clear
                     .frame(height: 30)
                     .padding(0)
+                    .onHover { inside in
+                        #if targetEnvironment(macCatalyst) || os(macOS)
+                        // With nested split views, it's possible to transition from one Splitter to another,
+                        // so we always need to pop the current cursor (a no-op when it's the only one). We
+                        // may or may not push the hover cursor depending on whether it's inside or not.
+                        NSCursor.pop()
+                        if inside {
+                            NSCursor.resizeUpDown.push()
+                        }
+                        #endif
+                    }
                 Button(
                     action: { withAnimation { hide.toggle() } },
                     label: {
