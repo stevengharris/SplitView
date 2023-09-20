@@ -35,13 +35,13 @@ let demos: [DemoID : Demo] = [
     .simpleAdjustable :
         Demo(
             label: "Simple adjustable",
-            description: "Adjustable split view with yellow default Splitter",
+            description: "Adjustable split view with yellow default Splitter.",
             holders: [SplitStateHolder(layout: LayoutHolder(), hide: SideHolder())]
         ),
     .nestedAdjustable :
         Demo(
             label: "Nested adjustable",
-            description: "Nested adjustable split views with the default Splitter",
+            description: "Nested adjustable split views with the default Splitter that hides.",
             holders: [
                 SplitStateHolder(layout: LayoutHolder(), hide: SideHolder()),
                 SplitStateHolder(layout: LayoutHolder(.vertical), hide: SideHolder()),
