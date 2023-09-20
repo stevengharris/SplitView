@@ -53,7 +53,7 @@ use a Split view.
 
 **Note:** You can also use the `.split`, `.vSplit`, and `.hSplit` view modifiers that come 
 with the package to create a Split, VSplit, and HSplit view if that makes more sense to you.
-See the discussion in [Style](#Style).
+See the discussion in [Style](#style).
 
 Once you have created a Split, HSplit, or VSplit view, you can use view modifiers on them 
 to:
@@ -285,9 +285,9 @@ shortcut to avoid having to press a button to hide a side. You can see an exampl
 it in Xcode when you drag the splitter between the editor area in the middle and the 
 Inspector on the right beyond the constraint Xcode puts on the Inspector width. Because 
 in Xcode the splitter between the editor area and the Inspector is 
-[invisible](###Invisible-Splitters), once it's hidden, you cannot drag it back out. 
+[invisible](#invisible-splitters), once it's hidden, you cannot drag it back out. 
 You need a button to invoke the hide/show action, as discussed 
-[earlier](###Modifying-And-Constraining-The-Default-Splitter).
+[earlier](#modifying-and-constraining-the-default-splitter).
 
 To use hide-on-drag, add `hideAtMinP` and/or `hideAtMinS` to your `constraints` definition.
 For example, the following will constrain dragging between 20% and 80% of the width, but 
@@ -579,12 +579,12 @@ NavigationSplitView would be useful.
 ### Version 3.2
 
 * Display resizing cursors on Mac Catalyst and MacOS when hovering over the splitter.
-* Add ability to hide a side when dragging completes at a point beyond the minimum constraints. See the [Hide On Drag](###Hide-On-Drag) section.
-* Add ability to hide the splitter when a side is hidden. See the information on `hideSplitter` in the [Modifying And Constraining The Default Splitter](###Modifying-And-Constraining-The-Default-Splitter) section.
+* Add ability to hide a side when dragging completes at a point beyond the minimum constraints. See the [Hide On Drag](#hide-on-drag) section.
+* Add ability to hide the splitter when a side is hidden. See the information on `hideSplitter` in the [Modifying And Constraining The Default Splitter](#modifying-and-constraining-the-default-splitter) section.
 
 ### Version 3.1
 
-* Add `onDrag` modifier to be able to monitor and respond to splitter movement. See the [Monitoring And Responding To Splitter Movement](###Monitoring-And Responding-To-Splitter-Movement) section.
+* Add `onDrag` modifier to be able to monitor and respond to splitter movement. See the [Monitoring And Responding To Splitter Movement](#monitoring-and responding-to-splitter-movement) section.
 
 ### Version 3.0
 
