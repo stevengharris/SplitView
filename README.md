@@ -584,7 +584,7 @@ NavigationSplitView would be useful.
 
 ### Version 3.1
 
-* Add `onDrag` modifier to be able to monitor and respond to splitter movement. See the [Monitoring And Responding To Splitter Movement](#monitoring-and responding-to-splitter-movement) section.
+* Add `onDrag` modifier to be able to monitor and respond to splitter movement. See the [Monitoring And Responding To Splitter Movement](#monitoring-and-responding-to-splitter-movement) section.
 
 ### Version 3.0
 
