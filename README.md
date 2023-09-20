@@ -15,7 +15,7 @@ The Split, HSplit, and VSplit views and associated modifiers let you:
 * Create a single view containing two views, arranged in a horizontal (side-by-side) 
 or vertical (above-and-below) `layout` separated by a draggable `splitter` for resizing.
 * Specify the `fraction` of full width/height for the initial position of the splitter.
-* Programmatically `hide` either view and change their `layout`.
+* Programmatically `hide` either view and change the `layout`.
 * Arbitrarily nest split views.
 * Constrain the splitter movement by specifying minimum fractions of the full width/height
 for either or both views.
@@ -180,7 +180,7 @@ struct ContentView: View {
 }
 ```
 
-### Using UserDefaults for Split State
+### Using UserDefaults For Split State
 
 The three holders - SideHolder, LayoutHolder, and FractionHolder - all come with a 
 static method to return instances that get/set their state from UserDefaults.standard. 
@@ -225,7 +225,7 @@ splitter, the `fraction` state is also retained in UserDefaults.standard.
 You can change the `layout` and hide/show the green view, and when you next open 
 the app, the `fraction`, `hide`, and `layout` will all be restored how you left them.
 
-### Modifying and Constraining the Default Splitter 
+### Modifying And Constraining The Default Splitter 
 
 You can change the way the default Splitter displays using the `styling` modifier. 
 For example, you can change the color, inset, and thickness:
@@ -235,6 +235,19 @@ HSplit(left: { Color.red }, right: { Color.green })
     .fraction(0.25)
     .styling(color: Color.cyan, inset: 4, visibleThickness: 8)
 ```
+
+If you prefer the splitter to hide also when you hide a side, you can set `hideSplitter`
+to `true` in the `styling` modifier. For example:
+
+```
+HSplit(left: { Color.red }, right: { Color.green })
+    .styling(hideSplitter: true)
+```
+
+Note that if you set `hideSplitter` to `true`, you need to include a means for 
+your user to unhide a view once it is hidden, like a hide/show button. That's 
+because the splitter itself isn't displayed at all, so you can't just drag it out 
+from the side.
 
 By default, the splitter can be dragged across the full width/height of the split 
 view. The `constraints` modifier lets you constrain the minimum faction of the 
@@ -257,9 +270,12 @@ from the hidden side when you never could have dragged it to that location to be
 with because of the constraint. As soon as you tried to drag it, the splitter 
 would snap to an allowed position, which is also jarring to users. To make sure 
 there is no visual confusion about whether a splitter can be dragged, the splitter 
-will not be shown at all when it is not draggable. Again: a splitter will only be 
+will not be shown at all when it is not draggable. Again: a splitter will be 
 non-draggable when a side is hidden and the corresponding `minPFraction` or 
-`minSFraction` is specified.
+`minSFraction` is specified. Note that just like setting `hideSplitter`
+to `true` in the `styling` modifier, if your splitter can become non-draggable,
+you need to include a means for your user to unhide a view once it is hidden, 
+like a hide/show button. 
 
 ### Hide-On-Drag
 
@@ -269,9 +285,9 @@ shortcut to avoid having to press a button to hide a side. You can see an exampl
 it in Xcode when you drag the splitter between the editor area in the middle and the 
 Inspector on the right beyond the constraint Xcode puts on the Inspector width. Because 
 in Xcode the splitter between the editor area and the Inspector is 
-[invisible](### Invisible Splitters), once it's hidden, you cannot drag it back out. 
+[invisible](###Invisible-Splitters), once it's hidden, you cannot drag it back out. 
 You need a button to invoke the hide/show action, as discussed 
-[earlier](### Modifying and Constraining the Default Splitter).
+[earlier](###Modifying-And-Constraining-The-Default-Splitter).
 
 To use hide-on-drag, add `hideAtMinP` and/or `hideAtMinS` to your `constraints` definition.
 For example, the following will constrain dragging between 20% and 80% of the width, but 
@@ -541,17 +557,16 @@ Split(primary: { Color.green }, secondary: { Color.red })
 
 ## Issues
 
-The only issue I am aware of is what appears to be a harmless log message when 
-dragging the Splitter to cause a view size to go to zero on Mac Catalyst only. 
-The message shows up in the Xcode console as:
+1. In versions prior to MacOS 14.0 Sonoma, there is what appears to be a harmless
+log message when dragging the Splitter to cause a view size to go to zero on 
+Mac Catalyst only. The message shows up in the Xcode console as `[API] cannot 
+add handler to 3 from 3 - dropping`. This message is not present as of MacOS 14.0 Sonoma.
 
-```
-[API] cannot add handler to 3 from 3 - dropping
-```
-
-I don't see this message when using Split views with "real" SwiftUI views and have tried 
-many different ways to prevent it, but in the end, it just seems like a harmless but 
-annoying log message that is beyond the control of anyone but Apple.
+2. The Splitter's `onHover` entry action used to display the resizing cursors on Mac Catalyst 
+and MacOS may occasionally not be triggered when using nested split views. I think this happens 
+seldom enough to not be a problem. When it occurs, the cursor doesn't change to 
+`resizeLeftRight` or `resizeUpDown` when hovering over a splitter, but the splitter will 
+still be draggable.
 
 ## Possible Enhancements
 
@@ -561,9 +576,15 @@ NavigationSplitView would be useful.
 
 ## History
 
+### Version 3.2
+
+* Display resizing cursors on Mac Catalyst and MacOS when hovering over the splitter.
+* Add ability to hide a side when dragging completes at a point beyond the minimum constraints. See the [Hide On Drag](###Hide-On-Drag) section.
+* Add ability to hide the splitter when a side is hidden. See the information on `hideSplitter` in the [Modifying And Constraining The Default Splitter](###Modifying-And-Constraining-The-Default-Splitter) section.
+
 ### Version 3.1
 
-* Add onDrag modifier to be able to monitor and respond to splitter movement. Update README accordingly.
+* Add `onDrag` modifier to be able to monitor and respond to splitter movement. See the [Monitoring And Responding To Splitter Movement](###Monitoring-And Responding-To-Splitter-Movement) section.
 
 ### Version 3.0
 
