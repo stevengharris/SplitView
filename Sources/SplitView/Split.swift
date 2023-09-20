@@ -210,23 +210,33 @@ public struct Split<P: View, D: View, S: View>: View {
         return min(1 - (minSFraction ?? 0), max((minPFraction ?? 0), newFraction))                      // Constrained privateFraction
     }
     
-    /// The splitter is draggable if neither side is hidden or neither of the min fractions is specified.
-    /// If a side is hidden, then it is only draggable if no minimum fraction is specified.
+    /// Return whether the splitter is draggable. 
     ///
-    /// When a minimum fraction is specified and we hide a side, then we want it to stay hidden and
-    /// not be able to be dragged-out from its hiding place. Otherwise, it looks weird because you are
-    /// dragging it out from a place it can never be dragged-to.
+    /// The splitter becomes non-draggable if `styling.hideSplitter` is `true`
+    /// and either side is hidden. It will also be non-draggable when the `primary` side is
+    /// hidden and `minPFraction` is specified, or when the `secondary` side is hidden
+    /// and `minSFraction` is specified. When the splitter is non-draggable, it is not part of
+    /// the body of Split. It is not just hidden -- it doesn't even exist to respond to drag events.
     ///
-    /// Typically, an invisible splitter will always specify min fractions it has to stay within. We still want to
-    /// be able to hide the views, though. If we do so, then we sure don't want the hidden view to be able
-    /// to be dragged-out when there is no visible indication it is hidden.
+    /// **Important**: You must provide a means to unhide the side (e.g., a hide/show
+    /// button) if your splitter can become non-draggable.
+    ///
+    /// On a related note, when you use an invisible splitter, you will typically specify min 
+    /// fractions it has to stay within. If you don't, then it can be dragged to the edge, and
+    /// your user will have no visual indication that the other side can be re-exposed by dragging
+    /// the invisible splitter out again.
     private func isDraggable() -> Bool {
-        guard hide.side != nil || minPFraction != nil || minSFraction != nil else { return true }
-        guard let side = hide.side else { return true }
-        if side.isPrimary {
-            return minPFraction == nil
+        if hide.side == nil { return true }
+        if styling.hideSplitter {
+            return false
         } else {
-            return minSFraction == nil
+            if minPFraction == nil && minSFraction == nil {
+                return true
+            } else if hide.side!.isPrimary {
+                return minPFraction == nil
+            } else {
+                return minSFraction == nil
+            }
         }
     }
     
@@ -302,8 +312,8 @@ public struct Split<P: View, D: View, S: View>: View {
     /// Return a new instance of Split with `styling` set to a SplitStyling holding these values.
     ///
     /// This is a convenience method for `Splitter.line()` which is also used by `Splitter.invisible()`.
-    public func styling(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) -> Split {
-        let styling = SplitStyling(color: color, inset: inset, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness)
+    public func styling(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil, hideSplitter: Bool = false) -> Split {
+        let styling = SplitStyling(color: color, inset: inset, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness, hideSplitter: hideSplitter)
         return Split(layout, fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
@@ -311,7 +321,7 @@ public struct Split<P: View, D: View, S: View>: View {
     ///
     /// This is a convenience method for HSplit and VSplit.
     public func styling(_ styling: SplitStyling) -> Split {
-        self.styling(color: styling.color, inset: styling.inset, visibleThickness: styling.visibleThickness, invisibleThickness: styling.invisibleThickness)
+        self.styling(color: styling.color, inset: styling.inset, visibleThickness: styling.visibleThickness, invisibleThickness: styling.invisibleThickness, hideSplitter: styling.hideSplitter)
     }
     
     /// Return a new instance of Split with `layout` set to this LayoutHolder.

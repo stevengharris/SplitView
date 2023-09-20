@@ -15,11 +15,14 @@ public class SplitStyling: ObservableObject {
     var visibleThickness: CGFloat
     /// The thickness across which the dragging will be detected.
     var invisibleThickness: CGFloat
+    /// Whether to hide the splitter along with the side when SplitSide is set
+    var hideSplitter: Bool
     
-    public init(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil) {
+    public init(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil, hideSplitter: Bool = false) {
         self.color = color ?? Splitter.defaultColor
         self.inset = inset ?? Splitter.defaultInset
         self.visibleThickness = visibleThickness ?? Splitter.defaultVisibleThickness
         self.invisibleThickness = invisibleThickness ?? Splitter.defaultInvisibleThickness
+        self.hideSplitter = hideSplitter
     }
 }
