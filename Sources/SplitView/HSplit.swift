@@ -67,8 +67,8 @@ public struct HSplit<P: View, D: View, S: View>: View {
     }
     
     /// Return a new instance of HSplit with `constraints` set to these values.
-    public func constraints(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil, hideAtMinP: Bool = false, hideAtMinS: Bool = false) -> HSplit {
-        let constraints = SplitConstraints(minPFraction: minPFraction, minSFraction: minSFraction, priority: priority, hideAtMinP: hideAtMinP, hideAtMinS: hideAtMinS)
+    public func constraints(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil, dragToHideP: Bool = false, dragToHideS: Bool = false) -> HSplit {
+        let constraints = SplitConstraints(minPFraction: minPFraction, minSFraction: minSFraction, priority: priority, dragToHideP: dragToHideP, dragToHideS: dragToHideS)
         return HSplit(fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     

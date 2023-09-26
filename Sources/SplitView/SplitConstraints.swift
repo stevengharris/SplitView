@@ -15,17 +15,17 @@ public struct SplitConstraints {
     /// The side that should have sizing priority (i.e., stay fixed) as the containing view is resized. A value of `nil` means the fraction remains unchanged.
     var priority: SplitSide?
     /// Whether to hide the primary side when dragging stops past minPFraction
-    var hideAtMinP: Bool
+    var dragToHideP: Bool
     /// Whether to hide the secondary side when dragging stops past minSFraction
-    var hideAtMinS: Bool
+    var dragToHideS: Bool
     
-    public init(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil, hideAtMinP: Bool = false, hideAtMinS: Bool = false) {
+    public init(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil, dragToHideP: Bool = false, dragToHideS: Bool = false) {
         self.minPFraction = minPFraction
         self.minSFraction = minSFraction
         self.priority = priority
-        // Note: minPFraction/minSFraction must be specified if hideAtMinP/hideAtMinS is true,
-        // else hideAtMinP/hideAtMinS are ignored.
-        self.hideAtMinP = hideAtMinP
-        self.hideAtMinS = hideAtMinS
+        // Note: minPFraction/minSFraction must be specified if dragToHideP/dragToHideS is true,
+        // else dragToHideP/dragToHideS are ignored.
+        self.dragToHideP = dragToHideP
+        self.dragToHideS = dragToHideS
     }
 }

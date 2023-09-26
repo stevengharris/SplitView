@@ -24,6 +24,7 @@ public struct Splitter: SplitDivider {
     private let privateInset: CGFloat?
     private let privateVisibleThickness: CGFloat?
     private let privateInvisibleThickness: CGFloat?
+    @State private var dividerColor: Color  // Changes based on styling.previewHide
     
     // Defaults
     public static var defaultColor: Color = Color.gray
@@ -39,7 +40,7 @@ public struct Splitter: SplitDivider {
                     .frame(width: invisibleThickness)
                     .padding(0)
                 RoundedRectangle(cornerRadius: visibleThickness / 2)
-                    .fill(color)
+                    .fill(dividerColor)
                     .frame(width: visibleThickness)
                     .padding(EdgeInsets(top: inset, leading: 0, bottom: inset, trailing: 0))
             case .vertical:
@@ -47,12 +48,17 @@ public struct Splitter: SplitDivider {
                     .frame(height: invisibleThickness)
                     .padding(0)
                 RoundedRectangle(cornerRadius: visibleThickness / 2)
-                    .fill(color)
+                    .fill(dividerColor)
                     .frame(height: visibleThickness)
                     .padding(EdgeInsets(top: 0, leading: inset, bottom: 0, trailing: inset))
             }
         }
         .contentShape(Rectangle())
+        .task { dividerColor = color } // Otherwise, styling.color does not appear at open
+        // If we are previewing hiding a side using drag-to-hide, then we make the color .clear.
+        .onChange(of: styling.previewHide) { hide in
+            dividerColor = hide ? .clear : privateColor ?? color
+        }
         // Perhaps should consider some kind of custom hoverEffect, since the cursor change
         // on hover doesn't work on iOS.
         .onHover { inside in
@@ -73,6 +79,7 @@ public struct Splitter: SplitDivider {
         privateInset = inset
         privateVisibleThickness = visibleThickness
         privateInvisibleThickness = invisibleThickness
+        _dividerColor = State(initialValue: color ?? Self.defaultColor)
     }
     
 }

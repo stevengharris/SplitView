@@ -63,6 +63,8 @@ to:
 * Adjust the style of the default Splitter, including its color and thickness.
 * Place constraints on the minimum fraction each side occupies and which side should be
 prioritized (i.e., remain fixed in size) as the containing view's size changes.
+* Drag-to-hide, so when you constrain the fraction on a side, you can hide the side 
+when you drag more than halfway beyond the constraint.
 * Provide a custom splitter.
 * Be able to toggle layout between horizontal and vertical. This modifier is only 
 available for the Split view, since HSplit and VSplit remain in a horizontal or 
@@ -277,27 +279,40 @@ to `true` in the `styling` modifier, if your splitter can become non-draggable,
 you need to include a means for your user to unhide a view once it is hidden, 
 like a hide/show button. 
 
-### Hide-On-Drag
+### Drag-To-Hide
 
 When you constrain the fraction of the primary or secondary side, you may want the 
-side to hide automatically when you drag past the constraint. This is a kind of 
-shortcut to avoid having to press a button to hide a side. You can see an example of 
-it in Xcode when you drag the splitter between the editor area in the middle and the 
-Inspector on the right beyond the constraint Xcode puts on the Inspector width. Because 
-in Xcode the splitter between the editor area and the Inspector is 
-[invisible](#invisible-splitters), once it's hidden, you cannot drag it back out. 
-You need a button to invoke the hide/show action, as discussed 
-[earlier](#modifying-and-constraining-the-default-splitter).
+side to hide automatically when you drag past the constraint. However, we need to 
+trigger this drag-to-hide behavior when you drag "well past" the constraint, because 
+otherwise, it's difficult to leave the splitter positioned at the constraint without
+hiding it. For this reason, a split view defines "well past" to mean "more than 
+halfway past the contraint".
 
-To use hide-on-drag, add `hideAtMinP` and/or `hideAtMinS` to your `constraints` definition.
+Drag-to-hide can be a nice shortcut to avoid having to press a button to hide a side. 
+You can see an example of it in Xcode when you drag the splitter between the editor area 
+in the middle and the Inspector on the right beyond the constraint Xcode puts on the 
+Inspector width. In Xcode, when you drag-to-hide the splitter between the editor area 
+and the Inspector, you cannot drag it back out. You need a button to invoke the hide/show 
+action, as discussed [earlier](#modifying-and-constraining-the-default-splitter). The 
+same is true with drag-to-hide using a split view.
+
+When your cursor moves beyond the halfway point of the constrained side, the split view 
+previews what it will look like when the side is hidden. This way, you have a visual indication 
+that the side will hide, and you can drag back out to avoid hiding it. If your dragging ends 
+when the side is hidden, then it will remain hidden.
+
+Note that when you use drag-to-hide, the splitter is always hidden when the side is hidden
+(i.e., `hideSplitter` is `true` in SplitStyling). It makes no sense to an end user to 
+leave the splitter showing when using drag-to-hide.
+
+To use drag-to-hide, add `dragToHideP` and/or `dragToHideS` to your `constraints` definition.
 For example, the following will constrain dragging between 20% and 80% of the width, but 
-when the drag gesture ends at or beyond the 80% mark on the right, the secondary side will 
-hide. Note also that in this case, the primary side doesn't hide when the drag gesture ends
-at or beyond the 20% mark on the left:
+when the drag gesture ends at or beyond the 90% mark on the right, the secondary side will 
+hide. Note also that in this case, the primary side doesn't use drag-to-hide:
 
 ```
 HSplit(left: { Color.red }, right: { Color.green })
-    .constraints(minPFraction: 0.2, minSFraction: 0.2, hideAtMinS: true)
+    .constraints(minPFraction: 0.2, minSFraction: 0.2, dragToHideS: true)
 ```
 
 ### Custom Splitters
@@ -515,7 +530,7 @@ Although ultimately Split has to deal in width and height, the math of adjusting
 layout is the same whether its `primary` is at the left or top and its `secondary` is 
 at the right or bottom.
 
-The main piece of state that changes in Split view is `privateFraction`. This is the 
+The main piece of state that changes in Split view is `constrainedFraction`. This is the 
 fraction of the overall width/height occupied by the `primary` view. It changes as you 
 drag the splitter. When you hide/show, it does not change, because it holds the state 
 needed to restore-to when a hidden view is shown again. The Split view monitors changes 
@@ -576,10 +591,15 @@ NavigationSplitView would be useful.
 
 ## History
 
+### Version 3.3
+
+* Support drag-to-hide with a preview of the side being hidden as you drag beyond the 
+halfway point of the constrained side. See the [Drag-To-Hide](#drag-to-hide) section.
+
 ### Version 3.2
 
 * Display resizing cursors on Mac Catalyst and MacOS when hovering over the splitter.
-* Add ability to hide a side when dragging completes at a point beyond the minimum constraints. See the [Hide On Drag](#hide-on-drag) section.
+* Add ability to hide a side when dragging completes at a point beyond the minimum constraints. See the [Drag-To-Hide](#drag-to-hide) section.
 * Add ability to hide the splitter when a side is hidden. See the information on `hideSplitter` in the [Modifying And Constraining The Default Splitter](#modifying-and-constraining-the-default-splitter) section.
 
 ### Version 3.1
