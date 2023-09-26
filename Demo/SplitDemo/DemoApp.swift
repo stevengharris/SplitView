@@ -60,7 +60,7 @@ struct DemoApp: View {
                     secondary: { Color.red }
                 )
                 .splitter { Splitter.invisible() }
-                .constraints(minPFraction: 0.2, minSFraction: 0.2, hideAtMinS: true)
+                .constraints(minPFraction: 0.2, minSFraction: 0.2, dragToHideS: true)
                 .layout(demo.holders[0].layout)
                 .hide(demo.holders[0].hide)
             case .customSplitter:
@@ -92,6 +92,7 @@ struct DemoApp: View {
                             primary: {
                                 VStack {
                                     Text(middleText)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     Spacer()
                                 }
                                 .padding(8)
@@ -99,13 +100,14 @@ struct DemoApp: View {
                             secondary: {
                                 VStack {
                                     Text(rightText)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     Spacer()
                                 }
                                 .padding(8)
                             }
                         )
                         .splitter { Splitter.line() }
-                        .constraints(minPFraction: 0.3, minSFraction: 0.15, priority: .secondary)
+                        .constraints(minPFraction: 0.3, minSFraction: 0.2, priority: .secondary, dragToHideS: true)
                         .layout(demo.holders[0].layout)
                         .fraction(0.75)
                         .hide(demo.holders[0].hide)

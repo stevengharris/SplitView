@@ -17,6 +17,8 @@ public class SplitStyling: ObservableObject {
     var invisibleThickness: CGFloat
     /// Whether to hide the splitter along with the side when SplitSide is set
     var hideSplitter: Bool
+    /// Whether we are previewing what hiding will look like
+    @Published var previewHide: Bool
     
     public init(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil, hideSplitter: Bool = false) {
         self.color = color ?? Splitter.defaultColor
@@ -24,5 +26,6 @@ public class SplitStyling: ObservableObject {
         self.visibleThickness = visibleThickness ?? Splitter.defaultVisibleThickness
         self.invisibleThickness = invisibleThickness ?? Splitter.defaultInvisibleThickness
         self.hideSplitter = hideSplitter
+        self.previewHide = false        // We never start out previewing
     }
 }

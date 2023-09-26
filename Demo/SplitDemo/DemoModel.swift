@@ -51,7 +51,7 @@ let demos: [DemoID : Demo] = [
     .invisibleSplitter:
         Demo(
             label: "Invisible splitter",
-            description: "Invisible splitter with constraints, hides secondary after drag.",
+            description: "Invisible splitter with constraints, drag-to-hide on right/bottom.",
             holders: [SplitStateHolder(layout: LayoutHolder(), hide: SideHolder())]
         ),
     .customSplitter:
@@ -63,7 +63,7 @@ let demos: [DemoID : Demo] = [
     .sidebars:
         Demo(
             label: "Sidebars",
-            description: "Opposing sidebar maintains its size as either is resized.",
+            description: "Opposing sidebar maintains size as either is resized, drag-to-hide on right/bottom.",
             holders: [SplitStateHolder(layout: LayoutHolder(.horizontal), hide: SideHolder())]
         ),
     
