@@ -19,6 +19,8 @@ or vertical (above-and-below) `layout` separated by a draggable `splitter` for r
 * Arbitrarily nest split views.
 * Constrain the splitter movement by specifying minimum fractions of the full width/height
 for either or both views.
+* Drag-to-hide, so when you constrain the fraction on a side, you can hide the side 
+when you drag more than halfway beyond the constraint.
 * Prioritize either of one the views to maintain its width/height as the containing 
 view changes size.
 * Easily save the state of `fraction`, `layout`, and `hide` so a split view opens 
@@ -63,8 +65,6 @@ to:
 * Adjust the style of the default Splitter, including its color and thickness.
 * Place constraints on the minimum fraction each side occupies and which side should be
 prioritized (i.e., remain fixed in size) as the containing view's size changes.
-* Drag-to-hide, so when you constrain the fraction on a side, you can hide the side 
-when you drag more than halfway beyond the constraint.
 * Provide a custom splitter.
 * Be able to toggle layout between horizontal and vertical. This modifier is only 
 available for the Split view, since HSplit and VSplit remain in a horizontal or 
