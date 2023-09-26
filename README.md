@@ -63,6 +63,8 @@ to:
 * Adjust the style of the default Splitter, including its color and thickness.
 * Place constraints on the minimum fraction each side occupies and which side should be
 prioritized (i.e., remain fixed in size) as the containing view's size changes.
+* Drag-to-hide, so when you constrain the fraction on a side, you can hide the side 
+when you drag more than halfway beyond the constraint.
 * Provide a custom splitter.
 * Be able to toggle layout between horizontal and vertical. This modifier is only 
 available for the Split view, since HSplit and VSplit remain in a horizontal or 
@@ -283,7 +285,7 @@ When you constrain the fraction of the primary or secondary side, you may want t
 side to hide automatically when you drag past the constraint. However, we need to 
 trigger this drag-to-hide behavior when you drag "well past" the constraint, because 
 otherwise, it's difficult to leave the splitter positioned at the constraint without
-hiding it. For this reason, the Split view defines "well past" to mean "more than 
+hiding it. For this reason, a split view defines "well past" to mean "more than 
 halfway past the contraint".
 
 Drag-to-hide can be a nice shortcut to avoid having to press a button to hide a side. 
@@ -292,10 +294,10 @@ in the middle and the Inspector on the right beyond the constraint Xcode puts on
 Inspector width. In Xcode, when you drag-to-hide the splitter between the editor area 
 and the Inspector, you cannot drag it back out. You need a button to invoke the hide/show 
 action, as discussed [earlier](#modifying-and-constraining-the-default-splitter). The 
-same is true with drag-to-hide using Split view.
+same is true with drag-to-hide using a split view.
 
-When your cursor moves beyond the halfway point of the constrained side, the Split view 
-previews what it will look like with the side hidden. This way, you have a visual indication 
+When your cursor moves beyond the halfway point of the constrained side, the split view 
+previews what it will look like when the side is hidden. This way, you have a visual indication 
 that the side will hide, and you can drag back out to avoid hiding it. If your dragging ends 
 when the side is hidden, then it will remain hidden.
 
@@ -588,6 +590,11 @@ a split view that adapted to device orientation and form factors somewhat like
 NavigationSplitView would be useful.
 
 ## History
+
+### Version 3.3
+
+* Support drag-to-hide with a preview of the side being hidden as you drag beyond the 
+halfway point of the constrained side. See the [Drag-To-Hide](#drag-to-hide) section.
 
 ### Version 3.2
 
