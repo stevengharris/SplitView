@@ -63,8 +63,8 @@ public struct Split<P: View, D: View, S: View>: View {
             let height = size.height
             let length = horizontal ? width : height
             let breadth = horizontal ? height : width
-            let hidePrimary = sideToHide() == .primary
-            let hideSecondary = sideToHide() == .secondary
+            let hidePrimary = sideToHide() == .primary || hide.side == .primary
+            let hideSecondary = sideToHide() == .secondary || hide.side == .secondary
             let minPLength = length * ((hidePrimary ? 0 : minPFraction) ?? 0)
             let minSLength = length * ((hideSecondary ? 0 : minSFraction) ?? 0)
             let pLength = max(minPLength, pLength(in: size))
