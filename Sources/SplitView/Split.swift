@@ -94,9 +94,15 @@ public struct Split<P: View, D: View, S: View>: View {
                         primary
                             .frame(width: pWidth, height: pHeight)
                     } else {
-                        primary
-                            .frame(width: pWidth)
-                            .offset(pOffset)
+                        if horizontal {
+                            primary
+                                .frame(height: pHeight)
+                                .offset(pOffset)
+                        } else {
+                            primary
+                                .frame(width: pWidth)
+                                .offset(pOffset)
+                        }
                     }
                 }
                 if !hideSecondary {
@@ -129,7 +135,6 @@ public struct Split<P: View, D: View, S: View>: View {
     ///
     /// The `layout`, `fraction`,  `hide` ,  `styling`, `constraints`, and any custom `splitter` must be specified using the modifiers if they are not defaults
     public init(
-        isResizing: Bool = true,
         @ViewBuilder primary: @escaping () -> P,
         @ViewBuilder secondary: @escaping () -> S
     ) where D == Splitter {
@@ -138,6 +143,7 @@ public struct Split<P: View, D: View, S: View>: View {
         let hide = SideHolder()
         let styling = SplitStyling()
         let constraints = SplitConstraints()
+        let isResizing = true
         self.init(layout,
                   isResizing: isResizing,
                   fraction: fraction,
@@ -539,6 +545,20 @@ public struct Split<P: View, D: View, S: View>: View {
     /// Return a new instance of Split with `fraction` set to a FractionHolder holding onto this CGFloat.
     public func fraction(_ fraction: CGFloat) -> Split {
         self.fraction(FractionHolder(fraction))
+    }
+
+    /// Returns new instance of Split with `isResizing` set to boolean value
+    public func disableResizing(_ value: Bool) -> Split {
+        Split(layout,
+              isResizing: !value,
+              fraction: fraction,
+              hide: hide,
+              styling: styling,
+              constraints: constraints,
+              onDrag: onDrag,
+              primary: { primary },
+              splitter: { splitter },
+              secondary: { secondary })
     }
 
     /// Return a new instance of Split with `hide` set to this SideHolder.

@@ -19,21 +19,17 @@ public struct HSplit<P: View, D: View, S: View>: View {
     private let secondary: S
 
     public var body: some View {
-        Split(
-            isResizing: isResizing,
-            primary: { primary },
-            secondary: { secondary }
-        )
-        .layout(LayoutHolder(.horizontal))
-        .styling(styling)
-        .constraints(constraints)
-        .onDrag(onDrag)
-        .splitter {
-            splitter
-                .environmentObject(styling)
-        }
-        .fraction(fraction)
-        .hide(hide)
+        Split(primary: { primary }, secondary: { secondary })
+            .layout(LayoutHolder(.horizontal))
+            .styling(styling)
+            .constraints(constraints)
+            .onDrag(onDrag)
+            .splitter {
+                splitter
+                    .environmentObject(styling)
+            }
+            .fraction(fraction)
+            .hide(hide)
     }
 
     public init(
