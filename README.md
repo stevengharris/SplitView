@@ -320,22 +320,26 @@ HSplit(left: { Color.red }, right: { Color.green })
 By default the Split, HSplit, and VSplit views all use the default Splitter view. You can 
 create your own and use it, though. Your custom splitter should conform to SplitDivider 
 protocol, which makes sure your custom splitter can let the Split view know what its 
-`visibleThickness` is. The `visibleThickness` is the size your custom splitter displays 
+`styling` is. The `styling.visibleThickness` is the size your custom splitter displays 
 itself in, and it also defines the spacing between the `primary` and `secondary` views inside 
 of Split view.
 
 The Split view detects drag events occurring in the splitter. For this reason, you might want 
-to use a ZStack with an underlying Color.clear that represents the `invisibleThickness` if 
-the `visibleThickness` is too small for properly detecting the drag events.
+to use a ZStack with an underlying Color.clear that represents the `styling.invisibleThickness`
+if the `styling.visibleThickness` is too small for properly detecting the drag events.
 
 Here is an example custom splitter whose contents is sensitive to the observed `layout` 
 and `hide` state:
 
 ```
 struct CustomSplitter: SplitDivider {
-    var visibleThickness: CGFloat = 20
     @ObservedObject var layout: LayoutHolder
     @ObservedObject var hide: SideHolder
+    @ObservedObject var styling: SplitStyling
+    /// The `hideButton` state tells whether the custom splitter hides the button that normally shows
+    /// in the middle. If `styling.previewHide` is true, then when drag-to-hide has been enabled,
+    /// this splitter will become clear and the button will not be included in `body`.
+    @State private var hideButton: Bool = false
     let hideRight = Image(systemName: "arrowtriangle.right.square")
     let hideLeft = Image(systemName: "arrowtriangle.left.square")
     let hideDown = Image(systemName: "arrowtriangle.down.square")
@@ -345,35 +349,43 @@ struct CustomSplitter: SplitDivider {
         if layout.isHorizontal {
             ZStack {
                 Color.clear
-                    .frame(width: 30)   // Larger than the visibleThickness
+                    .frame(width: 30)
                     .padding(0)
-                Button(
-                    action: { withAnimation { hide.toggle() } },
-                    label: {
-                        hide.value == nil ? hideRight.imageScale(.large) : hideLeft.imageScale(.large)
-                    }
-                )
-                .buttonStyle(.borderless)
+                if !hideButton {
+                    Button(
+                        action: { withAnimation { hide.toggle() } },
+                        label: {
+                            hide.side == nil ? hideRight.imageScale(.large) : hideLeft.imageScale(.large)
+                        }
+                    )
+                    .buttonStyle(.borderless)
+                }
             }
             .contentShape(Rectangle())
+            .onChange(of: styling.previewHide) { hide in
+                hideButton = hide
+            }
         } else {
             ZStack {
                 Color.clear
                     .frame(height: 30)
                     .padding(0)
-                Button(
-                    action: { withAnimation { hide.toggle() } },
-                    label: {
-                        hide.value == nil ? hideDown.imageScale(.large) : hideUp.imageScale(.large)
-                    }
-                )
-                .buttonStyle(.borderless)
+                if !hideButton {
+                    Button(
+                        action: { withAnimation { hide.toggle() } },
+                        label: {
+                            hide.side == nil ? hideDown.imageScale(.large) : hideUp.imageScale(.large)
+                        }
+                    )
+                    .buttonStyle(.borderless)
+                }
             }
-            .contentShape(Rectangle())  // So the drag event is detected for the entire splitter
+            .contentShape(Rectangle())
+            .onChange(of: styling.previewHide) { hide in
+                hideButton = hide
+            }
         }
-    }
-    
-}
+    }}
 ``` 
 
 You can use the CustomSplitter like this:
@@ -382,11 +394,12 @@ You can use the CustomSplitter like this:
 struct ContentView: View {
     let layout = LayoutHolder()
     let hide = SideHolder()
+    let styling = SplitStyling(visibleThickness: 20)
     var body: some View {
         Split(primary: { Color.red }, secondary: { Color.green })
             .layout(layout)
             .hide(hide)
-            .splitter { CustomSplitter(layout: layout, hide: hide) }
+            .splitter { CustomSplitter(layout: layout, hide: hide, styling: styling) }
     }
 }
 ```
@@ -590,6 +603,11 @@ a split view that adapted to device orientation and form factors somewhat like
 NavigationSplitView would be useful.
 
 ## History
+
+### Version 3.4
+
+* Refactor so that Splitter holds SplitStyling, allowing custom splitters to participate properly in drag-to-hide.
+* Incompatible change to SplitDivider protocol to expose `styling: SplitStyling` rather than `visibleThickness`. The incompatibility only affects you if you were using a [custom splitter](#custom-splitters).
 
 ### Version 3.3
 

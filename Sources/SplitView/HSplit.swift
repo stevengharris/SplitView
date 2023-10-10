@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-public struct HSplit<P: View, D: View, S: View>: View {
+public struct HSplit<P: View, D: SplitDivider, S: View>: View {
     private let fraction: FractionHolder
     private let hide: SideHolder
-    private let styling: SplitStyling
     private let constraints: SplitConstraints
     private let onDrag: ((CGFloat)->Void)?
     private let primary: P
@@ -20,13 +19,9 @@ public struct HSplit<P: View, D: View, S: View>: View {
     public var body: some View {
         Split(primary: { primary }, secondary: { secondary })
             .layout(LayoutHolder(.horizontal))
-            .styling(styling)
             .constraints(constraints)
             .onDrag(onDrag)
-            .splitter {
-                splitter
-                    .environmentObject(styling)
-            }
+            .splitter { splitter }
             .fraction(fraction)
             .hide(hide)
     }
@@ -34,15 +29,13 @@ public struct HSplit<P: View, D: View, S: View>: View {
     public init(@ViewBuilder left: @escaping ()->P, @ViewBuilder right: @escaping ()->S) where D == Splitter {
         let fraction = FractionHolder()
         let hide = SideHolder()
-        let styling = SplitStyling()
         let constraints = SplitConstraints()
-        self.init(fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: nil, primary: { left() }, splitter: { D() }, secondary: { right() })
+        self.init(fraction: fraction, hide: hide, constraints: constraints, onDrag: nil, primary: { left() }, splitter: { D() }, secondary: { right() })
     }
     
-    private init(fraction: FractionHolder, hide: SideHolder, styling: SplitStyling, constraints: SplitConstraints, onDrag: ((CGFloat)->Void)?, @ViewBuilder primary: @escaping ()->P, @ViewBuilder splitter: @escaping ()->D, @ViewBuilder secondary: @escaping ()->S) {
+    private init(fraction: FractionHolder, hide: SideHolder, constraints: SplitConstraints, onDrag: ((CGFloat)->Void)?, @ViewBuilder primary: @escaping ()->P, @ViewBuilder splitter: @escaping ()->D, @ViewBuilder secondary: @escaping ()->S) {
         self.fraction = fraction
         self.hide = hide
-        self.styling = styling
         self.constraints = constraints
         self.onDrag = onDrag
         self.primary = primary()
@@ -55,21 +48,15 @@ public struct HSplit<P: View, D: View, S: View>: View {
     // Note: Modifiers return a new HSplit instance with the same state except for what is
     // being modified.
     
-    /// Return a new HSplit with the `splitter` set to a new type.
-    ///
-    /// If the splitter is a SplitDivider, get its visibleThickness and set that in `styling` before returning.
+    /// Return a new HSplit with the `splitter` set to the `splitter` passed-in.
     public func splitter<T>(@ViewBuilder _ splitter: @escaping ()->T) -> HSplit<P, T, S> where T: View {
-        let newSplitter = splitter()
-        if let splitDivider = newSplitter as? (any SplitDivider) {
-            styling.visibleThickness = splitDivider.visibleThickness
-        }
-        return HSplit<P, T, S>(fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: splitter, secondary: { secondary })
+        return HSplit<P, T, S>(fraction: fraction, hide: hide, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: splitter, secondary: { secondary })
     }
     
     /// Return a new instance of HSplit with `constraints` set to these values.
     public func constraints(minPFraction: CGFloat? = nil, minSFraction: CGFloat? = nil, priority: SplitSide? = nil, dragToHideP: Bool = false, dragToHideS: Bool = false) -> HSplit {
         let constraints = SplitConstraints(minPFraction: minPFraction, minSFraction: minSFraction, priority: priority, dragToHideP: dragToHideP, dragToHideS: dragToHideS)
-        return HSplit(fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
+        return HSplit(fraction: fraction, hide: hide, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
     /// Return a new instance of HSplit with `onDrag` set to `callback`.
@@ -77,18 +64,19 @@ public struct HSplit<P: View, D: View, S: View>: View {
     /// The `callback` will be executed as `splitter` is dragged, with the current value of `privateFraction`.
     /// Note that `fraction` is different. It is only set when drag ends, and it is used to determine the initial fraction at open.
     public func onDrag(_ callback: ((CGFloat)->Void)?) -> HSplit {
-        return HSplit(fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: callback, primary: { primary }, splitter: { splitter }, secondary: { secondary })
+        return HSplit(fraction: fraction, hide: hide, constraints: constraints, onDrag: callback, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
-    /// Return a new instance of HSplit with `styling` set to these values.
+    /// Return a new instance of HSplit with its `splitter.styling` set to these values.
     public func styling(color: Color? = nil, inset: CGFloat? = nil, visibleThickness: CGFloat? = nil, invisibleThickness: CGFloat? = nil, hideSplitter: Bool = false) -> HSplit {
         let styling = SplitStyling(color: color, inset: inset, visibleThickness: visibleThickness, invisibleThickness: invisibleThickness, hideSplitter: hideSplitter)
-        return HSplit(fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
+        splitter.styling.reset(from: styling)
+        return HSplit(fraction: fraction, hide: hide, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
     /// Return a new instance of HSplit with `fraction` set to this FractionHolder
     public func fraction(_ fraction: FractionHolder) -> HSplit<P, D, S> {
-        HSplit(fraction: fraction, hide: hide, styling: styling, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
+        HSplit(fraction: fraction, hide: hide, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
     /// Return a new instance of HSplit with `fraction` set to a FractionHolder holding onto this CGFloat
@@ -98,7 +86,7 @@ public struct HSplit<P: View, D: View, S: View>: View {
 
     /// Return a new instance of HSplit with `hide` set to this SideHolder
     public func hide(_ side: SideHolder) -> HSplit<P, D, S> {
-        HSplit(fraction: fraction, hide: side, styling: styling, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
+        HSplit(fraction: fraction, hide: side, constraints: constraints, onDrag: onDrag, primary: { primary }, splitter: { splitter }, secondary: { secondary })
     }
     
     /// Return a new instance of HSplit with `hide` set to a SideHolder holding onto this SplitSide
