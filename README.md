@@ -604,6 +604,11 @@ NavigationSplitView would be useful.
 
 ## History
 
+### Version 3.4
+
+* Refactor so that Splitter holds SplitStyling, allowing custom splitters to participate properly in drag-to-hide.
+* Incompatible change to SplitDivider protocol to expose `styling: SplitStyling` rather than `visibleThickness`. The incompatibility only affects you if you were using a [custom splitter](#custom-splitters).
+
 ### Version 3.3
 
 * Support drag-to-hide with a preview of the side being hidden as you drag beyond the 
