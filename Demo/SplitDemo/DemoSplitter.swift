@@ -11,8 +11,9 @@ import SplitView
 /// A custom splitter for the `.customSplitter` demo.
 ///
 /// Note a custom splitter must conform to SplitDivider protocol, which means it is a View that can tell the
-/// Split view what its `visibleThickness` is. The Split view separates the `primary` and `secondary`
-/// views by the `visibleThickness` of the SplitDivider.
+/// Split view what its `styling` is. The `styling` contains the `visibleThickness` as one property.
+/// The Split view separates the `primary` and `secondary` views by the `styling.visibleThickness`
+/// of the SplitDivider.
 ///
 /// A custom splitter should be sensitive to the layout, because if the layout changes, then the splitter needs to
 /// change. Similarly, your splitter can react to changes in the SideHolder if needed. You can see an example
@@ -25,9 +26,14 @@ import SplitView
 /// hide/show the view. You would want to use a similar technique if your custom splitter has areas your user
 /// interacts with. See the splitter between the editing area and the debug/console in Xcode as an example.
 struct DemoSplitter: SplitDivider {
-    var visibleThickness: CGFloat = 20
     @ObservedObject var layout: LayoutHolder
     @ObservedObject var hide: SideHolder
+    @ObservedObject var styling: SplitStyling
+    /// The `hideButton` state tells whether the custom splitter hides the button that normally shows
+    /// in the middle. If `styling.previewHide` is true, then when drag-to-hide has been enabled,
+    /// this splitter will become clear and the button will not be included in `body`. See the README for more
+    /// information about drag-to-hide.
+    @State private var hideButton: Bool = false
     let hideRight = Image(systemName: "arrowtriangle.right.square")
     let hideLeft = Image(systemName: "arrowtriangle.left.square")
     let hideDown = Image(systemName: "arrowtriangle.down.square")
@@ -50,15 +56,20 @@ struct DemoSplitter: SplitDivider {
                         }
                         #endif
                     }
-                Button(
-                    action: { withAnimation { hide.toggle() } },
-                    label: {
-                        hide.side == nil ? hideRight.imageScale(.large) : hideLeft.imageScale(.large)
-                    }
-                )
-                .buttonStyle(.borderless)
+                if !hideButton {
+                    Button(
+                        action: { withAnimation { hide.toggle() } },
+                        label: {
+                            hide.side == nil ? hideRight.imageScale(.large) : hideLeft.imageScale(.large)
+                        }
+                    )
+                    .buttonStyle(.borderless)
+                }
             }
             .contentShape(Rectangle())
+            .onChange(of: styling.previewHide) { hide in
+                hideButton = hide
+            }
         } else {
             ZStack {
                 Color.clear
@@ -75,15 +86,20 @@ struct DemoSplitter: SplitDivider {
                         }
                         #endif
                     }
-                Button(
-                    action: { withAnimation { hide.toggle() } },
-                    label: {
-                        hide.side == nil ? hideDown.imageScale(.large) : hideUp.imageScale(.large)
-                    }
-                )
-                .buttonStyle(.borderless)
+                if !hideButton {
+                    Button(
+                        action: { withAnimation { hide.toggle() } },
+                        label: {
+                            hide.side == nil ? hideDown.imageScale(.large) : hideUp.imageScale(.large)
+                        }
+                    )
+                    .buttonStyle(.borderless)
+                }
             }
             .contentShape(Rectangle())
+            .onChange(of: styling.previewHide) { hide in
+                hideButton = hide
+            }
         }
     }
     
@@ -91,7 +107,7 @@ struct DemoSplitter: SplitDivider {
 
 struct DemoSplitter_Previews: PreviewProvider {
     static var previews: some View {
-        DemoSplitter(layout: LayoutHolder(.horizontal), hide: SideHolder())
-        DemoSplitter(layout: LayoutHolder(.vertical), hide: SideHolder())
+        DemoSplitter(layout: LayoutHolder(.horizontal), hide: SideHolder(), styling: SplitStyling(visibleThickness: 20))
+        DemoSplitter(layout: LayoutHolder(.vertical), hide: SideHolder(), styling: SplitStyling(visibleThickness: 20))
     }
 }

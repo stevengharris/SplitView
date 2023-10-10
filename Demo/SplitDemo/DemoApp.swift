@@ -66,11 +66,12 @@ struct DemoApp: View {
             case .customSplitter:
                 let layout0 = demo.holders[0].layout
                 let hide0 = demo.holders[0].hide
+                let styling = SplitStyling(visibleThickness: 20)
                 Split(
                     primary: { Color.green },
                     secondary: { Color.red }
                 )
-                .splitter { DemoSplitter(layout: layout0, hide: hide0) }
+                .splitter { DemoSplitter(layout: layout0, hide: hide0, styling: styling) }
                 .layout(layout0)
                 .hide(hide0)
             case .sidebars:
