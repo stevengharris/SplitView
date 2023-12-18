@@ -56,7 +56,7 @@ public class LayoutHolder: ObservableObject {
 ///
 /// Use the static `usingUserDefaults` method to save state automatically in `UserDefaults.standard`.
 public class FractionHolder: ObservableObject {
-    public var value: CGFloat {
+    @Published public var value: CGFloat {
         didSet {
             setter?(value)
         }
