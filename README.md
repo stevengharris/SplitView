@@ -294,8 +294,8 @@ that the side will hide, and you can drag back out to avoid hiding it. If your d
 when the side is hidden, then it will remain hidden.
 
 Note that when you use drag-to-hide, the splitter may or may not be hidden when the side is 
-hidden (depending on whether `hideSplitter` is `true` in SplitStyling). The preview of what the  
-split view will look like if you release past the halfway point reflects your choice of setting  
+hidden (depending on whether `hideSplitter` is `true` in SplitStyling). The preview of what the 
+split view will look like if you release past the halfway point reflects your choice of setting 
 for `hideSplitter`.
 
 To use drag-to-hide, add `dragToHideP` and/or `dragToHideS` to your `constraints` definition.
@@ -602,7 +602,7 @@ NavigationSplitView would be useful.
 ### Version 3.5
 
 * Publish changes to `fraction`, so that setting the value externally changes the split view layout (Issue [29](https://github.com/stevengharris/SplitView/issues/29)).
-* Allow use of `toggle(.primary)` or `toggle(.secondary)` as a way to specify the side to hide/show (thanks [Bastiaan Terhorst](https://github.com/bastiaanterhorst))
+* Allow use of `toggle(.primary)` or `toggle(.secondary)` as a way to specify the side to hide/show (thanks [Bastiaan Terhorst](https://github.com/bastiaanterhorst)).
 * Fix display bug when specifying `minFractionP` and hiding `primary` side (Issue [31](https://github.com/stevengharris/SplitView/issues/31)).
 * Remove forced hiding of splitter when hiding a side with `minFractionP` or `minFractionS` specified (Issue [30](https://github.com/stevengharris/SplitView/issues/30)).
 * Update README to reflect changes.
