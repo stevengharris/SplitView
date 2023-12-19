@@ -139,6 +139,11 @@ Note that the `hide` modifier accepts a SplitSide or a SideHolder. Similarly, `l
 can be passed as a SplitLayout - `.horizontal` or `.vertical` - or as a LayoutHolder. 
 And `fraction` can be passed as a CGFloat or as a FractionHolder.
 
+The `toggle()` method on `hide` toggles the hide/show state for the `secondary` side 
+by default. If you want to toggle the hide/show state for a specific side, then use 
+`toggle(.primary)` or `toggle(.secondary)` explicitly. (Note that `.primary`, `.left`, 
+and `.top` are synonyms; and `.secondary`, `.right`, and `.bottom` are synonyms.)
+
 ### Nesting Split Views
 
 Split views themselves can be split. Here is an example where the 
@@ -265,20 +270,6 @@ HSplit(left: { Color.red }, right: { Color.green })
     .constraints(minPFraction: 0.2, minSFraction: 0.2)
 ```
 
-One thing to note is that if you specify `minPFraction` or `minSFraction`, then when 
-you hide a side that has its minimum fraction specified, you won't be able to drag 
-it out from its hidden state. Why? Because it doesn't make sense to be able to drag 
-from the hidden side when you never could have dragged it to that location to begin 
-with because of the constraint. As soon as you tried to drag it, the splitter 
-would snap to an allowed position, which is also jarring to users. To make sure 
-there is no visual confusion about whether a splitter can be dragged, the splitter 
-will not be shown at all when it is not draggable. Again: a splitter will be 
-non-draggable when a side is hidden and the corresponding `minPFraction` or 
-`minSFraction` is specified. Note that just like setting `hideSplitter`
-to `true` in the `styling` modifier, if your splitter can become non-draggable,
-you need to include a means for your user to unhide a view once it is hidden, 
-like a hide/show button. 
-
 ### Drag-To-Hide
 
 When you constrain the fraction of the primary or secondary side, you may want the 
@@ -292,18 +283,20 @@ Drag-to-hide can be a nice shortcut to avoid having to press a button to hide a 
 You can see an example of it in Xcode when you drag the splitter between the editor area 
 in the middle and the Inspector on the right beyond the constraint Xcode puts on the 
 Inspector width. In Xcode, when you drag-to-hide the splitter between the editor area 
-and the Inspector, you cannot drag it back out. You need a button to invoke the hide/show 
-action, as discussed [earlier](#modifying-and-constraining-the-default-splitter). The 
-same is true with drag-to-hide using a split view.
+and the Inspector, you cannot drag it back out because the splitter itself is hidden. 
+You need a button to invoke the hide/show action, as discussed 
+[earlier](#modifying-and-constraining-the-default-splitter). The same is true with 
+drag-to-hide using a split view when `hideSplitter` is `true`.
 
 When your cursor moves beyond the halfway point of the constrained side, the split view 
 previews what it will look like when the side is hidden. This way, you have a visual indication 
 that the side will hide, and you can drag back out to avoid hiding it. If your dragging ends 
 when the side is hidden, then it will remain hidden.
 
-Note that when you use drag-to-hide, the splitter is always hidden when the side is hidden
-(i.e., `hideSplitter` is `true` in SplitStyling). It makes no sense to an end user to 
-leave the splitter showing when using drag-to-hide.
+Note that when you use drag-to-hide, the splitter may or may not be hidden when the side is 
+hidden (depending on whether `hideSplitter` is `true` in SplitStyling). The preview of what the  
+split view will look like if you release past the halfway point reflects your choice of setting  
+for `hideSplitter`.
 
 To use drag-to-hide, add `dragToHideP` and/or `dragToHideS` to your `constraints` definition.
 For example, the following will constrain dragging between 20% and 80% of the width, but 
@@ -337,8 +330,10 @@ struct CustomSplitter: SplitDivider {
     @ObservedObject var hide: SideHolder
     @ObservedObject var styling: SplitStyling
     /// The `hideButton` state tells whether the custom splitter hides the button that normally shows
-    /// in the middle. If `styling.previewHide` is true, then when drag-to-hide has been enabled,
-    /// this splitter will become clear and the button will not be included in `body`.
+    /// in the middle. If `styling.previewHide` is true, then we only want to show the button if
+    /// `styling.hideSplitter` is also true.
+    /// In general, people using a custom splitter need to handle the layout when `previewHide`
+    /// is triggered and that layout may depend on whether `hideSplitter` is `true`.
     @State private var hideButton: Bool = false
     let hideRight = Image(systemName: "arrowtriangle.right.square")
     let hideLeft = Image(systemName: "arrowtriangle.left.square")
@@ -363,7 +358,7 @@ struct CustomSplitter: SplitDivider {
             }
             .contentShape(Rectangle())
             .onChange(of: styling.previewHide) { hide in
-                hideButton = hide
+                hideButton = styling.hideSplitter
             }
         } else {
             ZStack {
@@ -382,7 +377,7 @@ struct CustomSplitter: SplitDivider {
             }
             .contentShape(Rectangle())
             .onChange(of: styling.previewHide) { hide in
-                hideButton = hide
+                hideButton = styling.hideSplitter
             }
         }
     }}
@@ -603,6 +598,14 @@ a split view that adapted to device orientation and form factors somewhat like
 NavigationSplitView would be useful.
 
 ## History
+
+### Version 3.5
+
+* Publish changes to `fraction`, so that setting the value externally changes the split view layout (Issue [29](https://github.com/stevengharris/SplitView/issues/29)).
+* Allow use of `toggle(.primary)` or `toggle(.secondary)` as a way to specify the side to hide/show (thanks [Bastiaan Terhorst](https://github.com/bastiaanterhorst))
+* Fix display bug when specifying `minFractionP` and hiding `primary` side (Issue [31](https://github.com/stevengharris/SplitView/issues/31)).
+* Remove forced hiding of splitter when hiding a side with `minFractionP` or `minFractionS` specified (Issue [30](https://github.com/stevengharris/SplitView/issues/30)).
+* Update README to reflect changes.
 
 ### Version 3.4
 
