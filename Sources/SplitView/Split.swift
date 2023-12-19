@@ -59,8 +59,8 @@ public struct Split<P: View, D: SplitDivider, S: View>: View {
             let height = size.height
             let length = horizontal ? width : height
             let breadth = horizontal ? height : width
-            let hidePrimary = sideToHide() == .primary || hide.side == .primary
-            let hideSecondary = sideToHide() == .secondary || hide.side == .secondary
+            let hidePrimary = sideToHide().isPrimary || hide.side.isPrimary
+            let hideSecondary = sideToHide().isSecondary || hide.side.isSecondary
             let minPLength = length * ((hidePrimary ? 0 : minPFraction) ?? 0)
             let minSLength = length * ((hideSecondary ? 0 : minSFraction) ?? 0)
             let pLength = max(minPLength, pLength(in: size))
@@ -144,6 +144,8 @@ public struct Split<P: View, D: SplitDivider, S: View>: View {
         if styling.previewHide {
             return 0
         } else if hide.side != nil && styling.hideSplitter {
+            return 0
+        } else if (hide.side.isPrimary && minPFraction != nil) || (hide.side.isSecondary && minSFraction != nil) {
             return 0
         } else {
             return styling.visibleThickness

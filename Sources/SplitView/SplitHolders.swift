@@ -102,15 +102,37 @@ public class SideHolder: ObservableObject {
         self.value = value
         self.getter = getter
         self.setter = setter
+        // Note .secondary will always toggle() by default if hide is initially nil.
+        // If you want to toggle .primary when hide is initially nil, then use toggle(.primary)
+        // or toggle(.left) or toggle(.top). See discussion below in the toggle method.
         oldValue = value == nil ? .secondary : nil
     }
     
+    /// Hide the `side`.
     public func hide(_ side: SplitSide) {
         setValue(side)
     }
     
-    public func toggle() {
-        setValue(oldValue)
+    /// Toggle whether `side` is hidden or not. 
+    ///
+    /// For example, multiple invocations of `toggle(.primary)` will alternate between the
+    /// `.primary`  (or `.left` or `.top`) side being hidden or visible.
+    ///
+    /// If `side` is not specified, then `toggle` does hide/show of the` .secondary` side or of the
+    /// initially hidden `side` that was identified when the SideHolder was instantiated. Thus, you can use a
+    /// SideHolder instantiated with `SideHolder()` and use `toggle()` to hide/show the `.secondary`
+    /// side. If you want to hide/show the `.primary` side that will be initially visible, then you can use
+    /// `SideHolder()` but hide/show using `toggle(.primary)`.
+    public func toggle(_ side: SplitSide? = nil) {
+        guard let side else {
+            setValue(oldValue)
+            return
+        }
+        if (side.isPrimary && value.isPrimary) || (side.isSecondary && value.isSecondary) {
+            setValue(oldValue)
+        } else {
+            setValue(side)
+        }
     }
     
     private func setValue(_ side: SplitSide?) {
