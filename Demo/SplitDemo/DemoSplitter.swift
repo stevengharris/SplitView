@@ -30,9 +30,10 @@ struct DemoSplitter: SplitDivider {
     @ObservedObject var hide: SideHolder
     @ObservedObject var styling: SplitStyling
     /// The `hideButton` state tells whether the custom splitter hides the button that normally shows
-    /// in the middle. If `styling.previewHide` is true, then when drag-to-hide has been enabled,
-    /// this splitter will become clear and the button will not be included in `body`. See the README for more
-    /// information about drag-to-hide.
+    /// in the middle. If `styling.previewHide` is true, then we only want to show the button if
+    /// `styling.hideSplitter` is also true. See the README for more information about drag-to-hide.
+    /// In general, people using a custom splitter need to handle the layout when `previewHide`
+    /// is triggered and that layout may depend on whether `hideSplitter` is `true`.
     @State private var hideButton: Bool = false
     let hideRight = Image(systemName: "arrowtriangle.right.square")
     let hideLeft = Image(systemName: "arrowtriangle.left.square")
@@ -68,7 +69,7 @@ struct DemoSplitter: SplitDivider {
             }
             .contentShape(Rectangle())
             .onChange(of: styling.previewHide) { hide in
-                hideButton = hide
+                hideButton = styling.hideSplitter
             }
         } else {
             ZStack {
@@ -98,7 +99,7 @@ struct DemoSplitter: SplitDivider {
             }
             .contentShape(Rectangle())
             .onChange(of: styling.previewHide) { hide in
-                hideButton = hide
+                hideButton = styling.hideSplitter
             }
         }
     }

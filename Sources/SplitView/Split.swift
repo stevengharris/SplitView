@@ -131,8 +131,6 @@ public struct Split<P: View, D: SplitDivider, S: View>: View {
         minSFraction = constraints.minSFraction
         dragToHideP = constraints.minPFraction != nil && constraints.dragToHideP
         dragToHideS = constraints.minSFraction != nil && constraints.dragToHideS
-        // If we are using drag-to-hide, then we force splitter.styling.hideSplitter to true
-        if dragToHideP || dragToHideS { self.splitter.styling.hideSplitter = true }
     }
     
     /// Return the spacing between `primary` and `secondary`, which is occupied by the splitter's `visibleThickness`.
@@ -142,10 +140,8 @@ public struct Split<P: View, D: SplitDivider, S: View>: View {
     private func spacing() -> CGFloat {
         let styling = splitter.styling
         if styling.previewHide {
-            return 0
+            return styling.hideSplitter ? 0 : styling.visibleThickness
         } else if hide.side != nil && styling.hideSplitter {
-            return 0
-        } else if (hide.side.isPrimary && minPFraction != nil) || (hide.side.isSecondary && minSFraction != nil) {
             return 0
         } else {
             return styling.visibleThickness
@@ -276,17 +272,10 @@ public struct Split<P: View, D: SplitDivider, S: View>: View {
     /// your user will have no visual indication that the other side can be re-exposed by dragging
     /// the invisible splitter out again.
     private func isDraggable() -> Bool {
-        if hide.side == nil { return true }
-        if splitter.styling.hideSplitter {
-            return false
+        if hide.side == nil {
+            return true
         } else {
-            if minPFraction == nil && minSFraction == nil {
-                return true
-            } else if hide.side!.isPrimary {
-                return minPFraction == nil
-            } else {
-                return minSFraction == nil
-            }
+            return !splitter.styling.hideSplitter
         }
     }
     

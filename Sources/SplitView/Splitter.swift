@@ -62,9 +62,16 @@ public struct Splitter: SplitDivider {
         }
         .contentShape(Rectangle())
         .task { dividerColor = color } // Otherwise, styling.color does not appear at open
-        // If we are previewing hiding a side using drag-to-hide, then we make the color .clear.
+        // If we are previewing hiding a side using drag-to-hide, and the splitter will be
+        // hidden when the side is hidden (styling.hideSplitter is true), then set the
+        // splitter color to clear. When the splitter is actually hidden, it doesn't even
+        // exist, but when previewing it does, so we have to make it invisible this way.
         .onChange(of: styling.previewHide) { hide in
-            dividerColor = hide ? .clear : privateColor ?? color
+            if hide {
+                dividerColor = styling.hideSplitter ? .clear : privateColor ?? color
+            } else {
+                dividerColor = privateColor ?? color
+            }
         }
         // Perhaps should consider some kind of custom hoverEffect, since the cursor change
         // on hover doesn't work on iOS.
