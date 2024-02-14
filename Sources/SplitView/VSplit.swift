@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 public struct VSplit<P: View, D: SplitDivider, S: View>: View {
     private let fraction: FractionHolder
     private let hide: SideHolder

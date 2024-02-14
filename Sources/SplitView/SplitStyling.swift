@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 public class SplitStyling: ObservableObject {
     /// Color of the visible part of the default Splitter.
     public var color: Color

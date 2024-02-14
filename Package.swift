@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.8
 
 import PackageDescription
 
@@ -14,7 +14,10 @@ let package = Package(
     targets: [
         .target(
             name: "SplitView",
-            dependencies: []),
+            dependencies: [],
+            swiftSettings: [
+                .enableExperimentalFeature("StrictConcurrency")
+            ]),
         .testTarget(name: "SplitViewTests", dependencies: ["SplitView"]),
     ]
 )

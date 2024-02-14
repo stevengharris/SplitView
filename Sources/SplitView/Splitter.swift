@@ -6,6 +6,7 @@
 //
 
 /// Custom splitters must conform to SplitDivider, just like the default `Splitter`.
+@MainActor 
 public protocol SplitDivider: View {
     var styling: SplitStyling { get }
 }
@@ -19,6 +20,7 @@ import SwiftUI
 /// specifies whether we are previewing what Split will look like when we hide a side. The Splitter uses `previewHide`
 /// to change its `dividerColor` to `.clear` when being previewed, while Split uses it to determine whether the
 /// spacing between views should be `visibleThickness` or zero.
+@MainActor 
 public struct Splitter: SplitDivider {
     
     @EnvironmentObject private var layout: LayoutHolder
